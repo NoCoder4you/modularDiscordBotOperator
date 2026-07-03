@@ -1,0 +1,49 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Logs
+LOGS/*.log
+LOGS/*.log.*
+*.log
+!LOGS/.gitkeep
+
+# IDE/editor settings
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# Runtime guild data; keep safe structure placeholders
+DATA/guilds/*
+!DATA/guilds/.gitkeep
+
+# Temporary and backup files
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
