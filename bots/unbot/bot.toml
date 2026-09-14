@@ -1,9 +1,10 @@
 [bot]
 id = "unbot"
 display_name = "UNBOT"
-entry_point = "unbot.main"
-working_directory = "."
+entry_point = "unbot"
+working_directory = "bots/unbot"
 enabled = false
 startup_policy = "manual"
 management_agent = false
 colour = "#FEE75C"
+icon = "user-clock"
