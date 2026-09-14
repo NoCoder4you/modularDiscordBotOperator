@@ -1,9 +1,10 @@
 [bot]
 id = "cda-admin"
 display_name = "CDA Admin"
-entry_point = "cda_admin.main"
-working_directory = "."
+entry_point = "cda_admin"
+working_directory = "bots/cda-admin"
 enabled = false
 startup_policy = "manual"
 management_agent = false
 colour = "#5865F2"
+icon = "shield"
