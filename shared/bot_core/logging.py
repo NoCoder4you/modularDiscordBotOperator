@@ -3,6 +3,7 @@
 from __future__ import annotations
 import logging
 import sys
+import time
 
 from .identifiers import validate_bot_id
 
@@ -29,6 +30,8 @@ def configure_logging(bot_id: str, level: str = "INFO") -> logging.Logger:
         handler = logging.StreamHandler(sys.stdout)
         handler._bot_core = True  # type: ignore[attr-defined]
         handler.addFilter(_BotId(bot_id))
-        handler.setFormatter(logging.Formatter(_FORMAT, "%Y-%m-%dT%H:%M:%S"))
+        formatter = logging.Formatter(_FORMAT, "%Y-%m-%dT%H:%M:%S")
+        formatter.converter = time.gmtime
+        handler.setFormatter(formatter)
         logger.addHandler(handler)
     return logger
