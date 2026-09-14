@@ -35,6 +35,7 @@ class BotStatus:
             return False
         current = now or datetime.now(timezone.utc)
         heartbeat = self.heartbeat_at
-        if heartbeat.tzinfo is None:
+        if heartbeat.tzinfo is None or current.tzinfo is None:
             return False
-        return (current - heartbeat).total_seconds() <= max_age_seconds
+        age_seconds = (current - heartbeat).total_seconds()
+        return 0 <= age_seconds <= max_age_seconds
