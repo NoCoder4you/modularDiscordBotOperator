@@ -1,0 +1,4 @@
+# The source snapshot had no dependency metadata or lock file. These bounds
+# retain the discord.py 2.x and aiohttp APIs it uses without needless upgrades.
+discord.py>=2.0,<3
+aiohttp>=3.8,<4
