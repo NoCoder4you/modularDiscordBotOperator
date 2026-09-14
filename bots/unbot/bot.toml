@@ -1,0 +1,9 @@
+[bot]
+id = "unbot"
+display_name = "UNBOT"
+entry_point = "unbot.main"
+working_directory = "."
+enabled = false
+startup_policy = "manual"
+management_agent = false
+colour = "#FEE75C"
