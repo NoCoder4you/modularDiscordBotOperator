@@ -216,3 +216,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# modularDiscordBotOperator runtime state and secrets
+.env.*
+!.env.example
+runtime/
+data/
+logs/
+backups/
+*.sqlite
+*.sqlite3
