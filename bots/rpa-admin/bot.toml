@@ -1,9 +1,10 @@
 [bot]
 id = "rpa-admin"
 display_name = "RPA Admin"
-entry_point = "rpa_admin.main"
-working_directory = "."
+entry_point = "rpa_admin"
+working_directory = "bots/rpa-admin"
 enabled = false
 startup_policy = "manual"
 management_agent = false
 colour = "#EB459E"
+icon = "shield-check"
