@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta, timezone
 import json
+import os
+import stat
 import pytest
 from shared.bot_core import BotState, BotStatus, PlatformConfig, ValidationError
 from shared.bot_core.jsonio import atomic_write_json
@@ -46,3 +48,21 @@ def test_atomic_json_write(tmp_path):
     atomic_write_json(target, {"healthy": True})
     assert json.loads(target.read_text()) == {"healthy": True}
     assert not list(target.parent.glob("*.tmp"))
+
+
+@pytest.mark.skipif(os.name != "posix", reason="directory fsync is a POSIX durability step")
+def test_atomic_json_write_syncs_file_and_directories(tmp_path, monkeypatch):
+    synced_modes = []
+    real_fsync = os.fsync
+
+    def recording_fsync(descriptor):
+        synced_modes.append(os.fstat(descriptor).st_mode)
+        real_fsync(descriptor)
+
+    monkeypatch.setattr(os, "fsync", recording_fsync)
+    atomic_write_json(tmp_path / "new" / "nested" / "state.json", {"healthy": True})
+
+    assert any(stat.S_ISREG(mode) for mode in synced_modes)
+    # Both newly created directories, their existing parent, and the renamed
+    # file's containing directory must be persisted.
+    assert sum(stat.S_ISDIR(mode) for mode in synced_modes) >= 4
