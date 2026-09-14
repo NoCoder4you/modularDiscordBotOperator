@@ -1,0 +1,432 @@
+"""Discord cog that manages moderator-approved Habbo username change requests."""
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+import re
+
+import discord
+from discord import app_commands
+from discord.ext import commands
+
+from habbo_verification_core import HabboApiError, ServerConfigStore, VerifiedUserStore, fetch_habbo_profile
+
+
+class UsernameChangeRequestView(discord.ui.View):
+    """Interactive moderator controls for approving or declining a username-change request embed."""
+
+    USER_ID_PATTERN = re.compile(r"<(?:@!?)?(\d+)>")
+
+    def __init__(self, cog: "UsernameChangeCog", *, admin_role_id: int | None) -> None:
+        # Keep the view persistent long enough for staff to action routine requests.
+        super().__init__(timeout=None)
+        self.cog = cog
+        self.admin_role_id = admin_role_id
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        """Allow only configured Discord Admin role holders to use the moderation buttons."""
+
+        if self.admin_role_id is None:
+            await interaction.response.send_message(
+                embed=UsernameChangeCog._build_error_embed(
+                    "This request cannot be actioned because the admin role is not configured.",
+                ),
+                ephemeral=True,
+            )
+            return False
+
+        member_roles = getattr(interaction.user, "roles", [])
+        if any(getattr(role, "id", None) == self.admin_role_id for role in member_roles):
+            return True
+
+        await interaction.response.send_message(
+            embed=UsernameChangeCog._build_error_embed(
+                "You need the configured Discord Admin role to use these buttons.",
+            ),
+            ephemeral=True,
+        )
+        return False
+
+    @discord.ui.button(label="Approve", style=discord.ButtonStyle.success, custom_id="username_change:accept")
+    async def accept(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        """Apply the requested change only after a moderator explicitly approves it."""
+
+        await self._finalize_request(interaction, button, status="Accepted", color=discord.Color.green())
+
+    @discord.ui.button(label="Decline", style=discord.ButtonStyle.danger, custom_id="username_change:decline")
+    async def decline(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
+        """Mark the request as declined and lock the moderation controls without changing stored data."""
+
+        await self._finalize_request(interaction, button, status="Declined", color=discord.Color.red())
+
+    async def _finalize_request(
+        self,
+        interaction: discord.Interaction,
+        button: discord.ui.Button,
+        *,
+        status: str,
+        color: discord.Color,
+    ) -> None:
+        """Update the embed status, apply approved changes, and disable further button input."""
+
+        del button  # Button metadata is unused once Discord routes the callback.
+        message = interaction.message
+        if message is None or not message.embeds:
+            await interaction.response.send_message(
+                embed=UsernameChangeCog._build_error_embed(
+                    "I could not find the original username-change embed to update.",
+                ),
+                ephemeral=True,
+            )
+            return
+
+        embed = message.embeds[0].copy()
+        # Keep the moderator-facing resolution note brief so the final embed stays easy to scan.
+        action_summary = "No changes applied."
+        if status == "Accepted":
+            action_summary = await self.cog.apply_username_change_from_embed(interaction, embed)
+
+        # Update the header copy as well so resolved requests no longer look pending at a glance.
+        self._set_resolution_description(embed, status=status)
+        self._upsert_status_field(embed, status=status, moderator=interaction.user.mention)
+        self._upsert_action_summary_field(embed, summary=action_summary)
+        embed.color = color
+
+        # Disable every button once a final moderator decision has been made.
+        for child in self.children:
+            if isinstance(child, discord.ui.Button):
+                child.disabled = True
+
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    @classmethod
+    def _extract_member_id(cls, mention_text: str) -> int | None:
+        """Parse a Discord mention field back into the user ID needed for approval-time updates."""
+
+        match = cls.USER_ID_PATTERN.search(mention_text or "")
+        if match is None:
+            return None
+        return int(match.group(1))
+
+    @staticmethod
+    def _set_resolution_description(embed: discord.Embed, *, status: str) -> None:
+        """Keep the embed description aligned with the current moderation state."""
+
+        resolution_descriptions = {
+            "Accepted": "Accepted by admin. The approved username change has been processed.",
+            "Declined": "Declined by admin. No username or nickname changes were applied.",
+        }
+        embed.description = resolution_descriptions.get(
+            status,
+            "Pending admin review. No username or nickname changes have been applied.",
+        )
+
+    @staticmethod
+    def _upsert_status_field(embed: discord.Embed, *, status: str, moderator: str) -> None:
+        """Insert or replace the request-status field so the moderation outcome is always visible."""
+
+        status_value = f"{status} by {moderator}"
+        for index, field in enumerate(embed.fields):
+            if field.name == "Status":
+                embed.set_field_at(index, name="Status", value=status_value, inline=False)
+                return
+
+        embed.add_field(name="Status", value=status_value, inline=False)
+
+    @staticmethod
+    def _upsert_action_summary_field(embed: discord.Embed, *, summary: str) -> None:
+        """Record the outcome of approval-time processing directly on the moderator-facing embed."""
+
+        for index, field in enumerate(embed.fields):
+            if field.name == "Outcome":
+                embed.set_field_at(index, name="Outcome", value=summary, inline=False)
+                return
+
+        embed.add_field(name="Outcome", value=summary, inline=False)
+
+
+class UsernameChangeCog(commands.Cog):
+    """Self-service cog for requesting moderator-approved Habbo username changes."""
+
+    AUTOROLES_EXTENSION = "COGS.ServerAutoRolesRPA"
+    VERIFICATION_LOG_CHANNEL_ID = 1481456997726425168
+
+    def __init__(self, bot: commands.Bot) -> None:
+        # Keep shared dependencies on the cog so tests can replace them with stubs.
+        self.bot = bot
+        self.verified_store = VerifiedUserStore()
+        self.server_config_store = ServerConfigStore()
+
+    @app_commands.command(
+        name="usernamechange",
+        description="Request an update to your saved Habbo username after you rename your Habbo account.",
+    )
+    @app_commands.describe(username="Your new Habbo username")
+    async def usernamechange(self, interaction: discord.Interaction, username: str) -> None:
+        """Validate and submit a username-change request for moderator approval."""
+
+        # Defer because the command performs API fetches before responding.
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        was_successful, result_message = await self._process_username_change(interaction, username)
+        if was_successful:
+            await interaction.followup.send(
+                embed=self._build_success_embed(result_message),
+                ephemeral=True,
+            )
+            return
+
+        # Keep all error responses inside embeds so moderation and user feedback stay visually consistent.
+        await interaction.followup.send(
+            embed=self._build_error_embed(result_message),
+            ephemeral=True,
+        )
+
+    async def _process_username_change(self, interaction: discord.Interaction, username: str) -> tuple[bool, str]:
+        """Validate the request and post it for review without mutating saved verification data."""
+
+        discord_id = str(interaction.user.id)
+        if not self.verified_store.is_verified(discord_id):
+            return False, "You must already exist in VerifiedUsers.json before you can request a username change."
+
+        stored_username = self.verified_store.get_habbo_username(discord_id)
+        if not stored_username:
+            return False, "You must already exist in VerifiedUsers.json before you can request a username change."
+
+        normalized_username = username.strip()
+        if not normalized_username:
+            return False, "Please provide a valid Habbo username."
+
+        if normalized_username.casefold() == stored_username.casefold():
+            return False, "You cannot request the same Habbo username that is already saved for you."
+
+        try:
+            profile = fetch_habbo_profile(normalized_username)
+        except HabboApiError as exc:
+            return False, f"I could not fetch that Habbo profile right now: {exc}"
+
+        requested_habbo_username = str(profile.get("name", normalized_username)).strip() or normalized_username
+        if requested_habbo_username.casefold() == stored_username.casefold():
+            return False, "You cannot request the same Habbo username that is already saved for you."
+
+        posted = await self._send_verification_log_embed(
+            interaction=interaction,
+            previous_username=stored_username,
+            requested_username=requested_habbo_username,
+        )
+        if not posted:
+            return False, "Your request could not be submitted because the request channel is unavailable."
+
+        return True, (
+            f"Your request to change **{stored_username}** to **{requested_habbo_username}** was sent for admin review. "
+            "Nothing updates until an admin approves it."
+        )
+
+    @staticmethod
+    def _build_success_embed(message: str) -> discord.Embed:
+        """Present successful request submissions in the same polished embed style as errors."""
+
+        return discord.Embed(
+            title="Username Change Request Sent",
+            description=message,
+            color=discord.Color.green(),
+        )
+
+    @staticmethod
+    def _build_error_embed(message: str) -> discord.Embed:
+        """Wrap user-facing errors in a consistent embed so failures are easy to spot."""
+
+        return discord.Embed(
+            title="Username Change Error",
+            description=message,
+            color=discord.Color.red(),
+        )
+
+    async def apply_username_change_from_embed(self, interaction: discord.Interaction, embed: discord.Embed) -> str:
+        """Apply the approved change described by the request embed and report what happened."""
+
+        field_values = {field.name: field.value for field in embed.fields}
+        member_id = UsernameChangeRequestView._extract_member_id(field_values.get("Member", ""))
+        previous_username = field_values.get("Previous Username", "").strip()
+        requested_username = field_values.get("Requested Username", "").strip()
+        if member_id is None or not previous_username or not requested_username:
+            return "Approval failed: the request embed is missing the member or username details."
+
+        # Re-fetch the current saved value so staff approval always acts on the latest persisted data.
+        current_saved_username = self.verified_store.get_habbo_username(str(member_id))
+        if not current_saved_username:
+            return "Approval failed: the member is no longer present in VerifiedUsers.json."
+        if current_saved_username.casefold() != previous_username.casefold():
+            return "Approval failed: the saved username changed after this request was submitted."
+
+        member = interaction.guild.get_member(member_id) if interaction.guild else None
+        target_interaction = type("ApprovalInteraction", (), {"guild": interaction.guild, "user": member})()
+
+        self.verified_store.save(discord_id=str(member_id), habbo_username=requested_username)
+
+        nickname_status = "Skipped (member is not currently in this server)."
+        if member is not None:
+            nickname_status = await self._sync_member_nickname(target_interaction, requested_username)
+
+        # Refresh the auto-role extension immediately so downstream role-sync behavior uses the new username.
+        await self._reload_autoroles_cog()
+        # Mirror the approved result into the configured request/review channel as a standalone success log.
+        await self._send_username_change_completion_embed(
+            interaction=interaction,
+            member_id=member_id,
+            previous_username=current_saved_username,
+            requested_username=requested_username,
+        )
+        return (
+            f"Username updated: **{current_saved_username}** → **{requested_username}**\n"
+            f"Nickname: {nickname_status}"
+        )
+
+    async def _sync_member_nickname(self, interaction: discord.Interaction, habbo_username: str) -> str:
+        if interaction.guild is None:
+            return "Skipped (nickname can only be changed inside a server)."
+
+        member = interaction.user
+        if member is None:
+            return "Skipped (member is not currently in this server)."
+
+        if getattr(member, "nick", None) == habbo_username:
+            return "No nickname change was required."
+
+        try:
+            await member.edit(
+                nick=habbo_username,
+                reason="Approved Habbo username change",
+            )
+        except discord.Forbidden:
+            return "Failed (bot lacks permission to manage this nickname)."
+        except discord.HTTPException:
+            return "Failed (Discord rejected the nickname update request)."
+
+        return "Nickname updated to approved Habbo username."
+
+    async def _reload_autoroles_cog(self) -> str:
+        """Reload the automatic role updater so it immediately uses the refreshed username mapping."""
+
+        try:
+            await self.bot.reload_extension(self.AUTOROLES_EXTENSION)
+        except commands.ExtensionNotLoaded:
+            try:
+                await self.bot.load_extension(self.AUTOROLES_EXTENSION)
+            except commands.ExtensionError as exc:
+                return f"Failed ({exc})"
+            return "Loaded AutoRoles cog because it was not already loaded."
+        except commands.ExtensionError as exc:
+            return f"Failed ({exc})"
+
+        return "Reloaded AutoRoles cog successfully."
+
+    @staticmethod
+    def _build_avatar_thumbnail_url(profile: dict) -> str | None:
+        """Build a Habbo avatar thumbnail URL from a profile payload when a figure string is available."""
+
+        figure_string = str(profile.get("figureString", "")).strip()
+        if not figure_string:
+            return None
+
+        from urllib.parse import quote
+
+        encoded_figure = quote(figure_string, safe="")
+        return (
+            "https://www.habbo.com/habbo-imaging/avatarimage"
+            f"?figure={encoded_figure}&size=l&direction=2&head_direction=3&gesture=sml"
+        )
+
+    async def _send_username_change_completion_embed(
+        self,
+        *,
+        interaction: discord.Interaction,
+        member_id: int,
+        previous_username: str,
+        requested_username: str
+    ) -> bool:
+        """Post a standalone approval result embed to the dedicated verification log channel."""
+
+        if interaction.guild is None:
+            return False
+
+        channel = interaction.guild.get_channel(self.VERIFICATION_LOG_CHANNEL_ID)
+        if channel is None:
+            channel = self.bot.get_channel(self.VERIFICATION_LOG_CHANNEL_ID)
+        if channel is None:
+            return False
+
+        # The verification log channel ID is explicit so completion notices always land in the requested destination.
+        embed = discord.Embed(
+            title="Username Change Applied",
+            color=discord.Color.green(),
+            timestamp=datetime.now(timezone.utc),
+        )
+        embed.add_field(name="Member", value=f"<@{member_id}>", inline=False)
+        embed.add_field(name="Previous Username", value=previous_username, inline=True)
+        embed.add_field(name="New Username", value=requested_username, inline=True)
+
+        try:
+            profile = fetch_habbo_profile(requested_username)
+        except HabboApiError:
+            profile = None
+
+        thumbnail_url = self._build_avatar_thumbnail_url(profile or {})
+        if thumbnail_url:
+            embed.set_thumbnail(url=thumbnail_url)
+
+        try:
+            await channel.send(embed=embed)
+        except (discord.Forbidden, discord.HTTPException):
+            return False
+
+        return True
+
+    async def _send_verification_log_embed(
+        self,
+        *,
+        interaction: discord.Interaction,
+        previous_username: str,
+        requested_username: str,
+    ) -> bool:
+        """Post a moderator review embed without applying any saved username or nickname changes yet."""
+
+        if interaction.guild is None:
+            return False
+
+        channel = interaction.guild.get_channel(self.VERIFICATION_LOG_CHANNEL_ID)
+        if channel is None:
+            channel = self.bot.get_channel(self.VERIFICATION_LOG_CHANNEL_ID)
+        if channel is None:
+            return False
+
+        admin_role_id = self.server_config_store.get_admin_role_id()
+
+        embed = discord.Embed(
+            title="Habbo Username Change Request",
+            color=discord.Color.orange(),
+            timestamp=datetime.now(timezone.utc),
+            description="Pending admin review. No username or nickname changes have been applied.",
+        )
+        embed.add_field(name="Member", value=interaction.user.mention, inline=False)
+        embed.add_field(name="Previous Username", value=previous_username, inline=True)
+        embed.add_field(name="Requested Username", value=requested_username, inline=True)
+        # Keep the request summary compact so moderators can review multiple requests quickly.
+        embed.add_field(name="Status", value="Pending admin review", inline=False)
+
+        try:
+            content = f"<@&{admin_role_id}>" if admin_role_id else None
+            await channel.send(
+                content=content,
+                embed=embed,
+                view=UsernameChangeRequestView(self, admin_role_id=admin_role_id),
+            )
+        except (discord.Forbidden, discord.HTTPException):
+            return False
+
+        return True
+
+
+async def setup(bot: commands.Bot) -> None:
+    """Discord extension entrypoint for loading this cog."""
+
+    await bot.add_cog(UsernameChangeCog(bot))
