@@ -1,0 +1,9 @@
+[bot]
+id = "cda-admin"
+display_name = "CDA Admin"
+entry_point = "cda_admin.main"
+working_directory = "."
+enabled = false
+startup_policy = "manual"
+management_agent = false
+colour = "#5865F2"
