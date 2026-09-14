@@ -1,0 +1,1721 @@
+{
+    "channels": {
+        "verification": 1248312846857666704,
+        "payannounce": 1303323145020768306,
+        "banlogs": 1249445968211087584,
+        "general": 1248307521119060033
+    },
+    "verified_users": [
+        {
+            "user_id": "175708841332178945",
+            "habbo": "shorty123"
+        },
+        {
+            "user_id": "1386434560358613163",
+            "habbo": "RiseofNina"
+        },
+        {
+            "user_id": "1083746410094149723",
+            "habbo": "RockDen"
+        },
+        {
+            "user_id": "1257707952786116639",
+            "habbo": "toshino"
+        },
+        {
+            "user_id": "1319885499216822303",
+            "habbo": "haqraeif"
+        },
+        {
+            "user_id": "992058011772256256",
+            "habbo": "Dazzler16"
+        },
+        {
+            "user_id": "653701324269027354",
+            "habbo": "Kingpauly1992"
+        },
+        {
+            "user_id": "597114104049696769",
+            "habbo": "Zap_Lia"
+        },
+        {
+            "user_id": "1046756505124347985",
+            "habbo": "xGon16"
+        },
+        {
+            "user_id": "1114391189173588079",
+            "habbo": "wxlshyy"
+        },
+        {
+            "user_id": "1203504131365539923",
+            "habbo": "iCuriosity,"
+        },
+        {
+            "user_id": "963416157895942225",
+            "habbo": "OreoSandwich"
+        },
+        {
+            "user_id": "716610303458017301",
+            "habbo": "flaaf"
+        },
+        {
+            "user_id": "693553106360991765",
+            "habbo": "Josephj827"
+        },
+        {
+            "user_id": "902932879766605905",
+            "habbo": "=.Nashirox"
+        },
+        {
+            "user_id": "1318670897670000700",
+            "habbo": "ItsAdonis.-"
+        },
+        {
+            "user_id": "687681253440225333",
+            "habbo": "BlueSkull"
+        },
+        {
+            "user_id": "446177522045026304",
+            "habbo": "lucnix10"
+        },
+        {
+            "user_id": "455864346690453514",
+            "habbo": "Tealics"
+        },
+        {
+            "user_id": "1313804462262980658",
+            "habbo": "_Ven"
+        },
+        {
+            "user_id": "1278636766353690636",
+            "habbo": "Elu.cc"
+        },
+        {
+            "user_id": "689948969304064040",
+            "habbo": "FortniteIsGone"
+        },
+        {
+            "user_id": "1101640653651316786",
+            "habbo": "cupievenus"
+        },
+        {
+            "user_id": "466258474720821283",
+            "habbo": "JiDan"
+        },
+        {
+            "user_id": "889760349736284180",
+            "habbo": "lukyy"
+        },
+        {
+            "user_id": "1063042400450248805",
+            "habbo": "-:Mittens."
+        },
+        {
+            "user_id": "985035286255902751",
+            "habbo": "coolavalanche"
+        },
+        {
+            "user_id": "365002150100860932",
+            "habbo": "proprogo"
+        },
+        {
+            "user_id": "522487327038373897",
+            "habbo": "Crept"
+        },
+        {
+            "user_id": "1289504187809271838",
+            "habbo": "weirdKnight"
+        },
+        {
+            "user_id": "1310537252572495884",
+            "habbo": "ention"
+        },
+        {
+            "user_id": "1139186767438823524",
+            "habbo": "Soups"
+        },
+        {
+            "user_id": "707395585036255242",
+            "habbo": ".=Ron=."
+        },
+        {
+            "user_id": "734946226587435088",
+            "habbo": "Barbsss"
+        },
+        {
+            "user_id": "727960294353141812",
+            "habbo": "Outfit"
+        },
+        {
+            "user_id": "513795974330580994",
+            "habbo": "decepted"
+        },
+        {
+            "user_id": "888821191337476107",
+            "habbo": "Atheana."
+        },
+        {
+            "user_id": "321450194367414273",
+            "habbo": "4DCRAIG"
+        },
+        {
+            "user_id": "1116547192681943052",
+            "habbo": "yushihama"
+        },
+        {
+            "user_id": "642033619040337930",
+            "habbo": "MegaOblivion"
+        },
+        {
+            "user_id": "1314850512822341695",
+            "habbo": ":MysticHunter:"
+        },
+        {
+            "user_id": "140169872955932673",
+            "habbo": "WilliamBenson"
+        },
+        {
+            "user_id": "373838959354314753",
+            "habbo": "angus92"
+        },
+        {
+            "user_id": "703521553631150150",
+            "habbo": "=x=Nikki=x="
+        },
+        {
+            "user_id": "695929666154004521",
+            "habbo": "=-=olly=-="
+        },
+        {
+            "user_id": "1304418397840474123",
+            "habbo": "mellow."
+        },
+        {
+            "user_id": "1329868705458294835",
+            "habbo": "Hylox"
+        },
+        {
+            "user_id": "437687538636029959",
+            "habbo": "Absletur0.0"
+        },
+        {
+            "user_id": "1330348861465694340",
+            "habbo": "Faddes"
+        },
+        {
+            "user_id": "1049777703005458492",
+            "habbo": "UK_Sunshine"
+        },
+        {
+            "user_id": "1330655643803324432",
+            "habbo": "Bendude!!279"
+        },
+        {
+            "user_id": "855425008871800843",
+            "habbo": "CuteArtistPoro"
+        },
+        {
+            "user_id": "399200138880352257",
+            "habbo": "jubxz"
+        },
+        {
+            "user_id": "184491479035543552",
+            "habbo": "Anti-thesis"
+        },
+        {
+            "user_id": "143258911305236480",
+            "habbo": "reinamayu"
+        },
+        {
+            "user_id": "335148756653572098",
+            "habbo": "Coolvimto"
+        },
+        {
+            "user_id": "1307685473854161001",
+            "habbo": "vinez"
+        },
+        {
+            "user_id": "422167039025741835",
+            "habbo": "wildtimes"
+        },
+        {
+            "user_id": "1146086290358554735",
+            "habbo": "naomi253"
+        },
+        {
+            "user_id": "802765931520327700",
+            "habbo": "Miaraf"
+        },
+        {
+            "user_id": "170194878972559360",
+            "habbo": "Agent-Toby"
+        },
+        {
+            "user_id": "711088517786370068",
+            "habbo": "-heauxmeaux"
+        },
+        {
+            "user_id": "1239650274579054662",
+            "habbo": "nullepeter"
+        },
+        {
+            "user_id": "1054491796736069743",
+            "habbo": "funlljekfbkjsmk"
+        },
+        {
+            "user_id": "290075783236419585",
+            "habbo": "Reitaro."
+        },
+        {
+            "user_id": "1343926429653405697",
+            "habbo": "sourcreamm"
+        },
+        {
+            "user_id": "182984073516417025",
+            "habbo": "FloeBro"
+        },
+        {
+            "user_id": "1344207767258267682",
+            "habbo": "sourcreamm"
+        },
+        {
+            "user_id": "363959278278803456",
+            "habbo": "Pelcster"
+        },
+        {
+            "user_id": "327083371500929104",
+            "habbo": "supernova-,"
+        },
+        {
+            "user_id": "511940119448518657",
+            "habbo": "hilds"
+        },
+        {
+            "user_id": "414922777846480906",
+            "habbo": "HyungnimEliza"
+        },
+        {
+            "user_id": "782019262490738718",
+            "habbo": "steverocker.alt"
+        },
+        {
+            "user_id": "704066719647531180",
+            "habbo": "GuitarHeroFan1"
+        },
+        {
+            "user_id": "575727647984713740",
+            "habbo": "revolved101"
+        },
+        {
+            "user_id": "1059208978334228521",
+            "habbo": "Keelan."
+        },
+        {
+            "user_id": "409011635647414283",
+            "habbo": "RapidPete"
+        },
+        {
+            "user_id": "1299341814792196128",
+            "habbo": "Lexiiii7"
+        },
+        {
+            "user_id": "644271194425786404",
+            "habbo": "riokid1234"
+        },
+        {
+            "user_id": "800382951262781470",
+            "habbo": "Tiao_Go"
+        },
+        {
+            "user_id": "658549670158663681",
+            "habbo": ".:myrasfrs:."
+        },
+        {
+            "user_id": "453871554816901131",
+            "habbo": "Aqn"
+        },
+        {
+            "user_id": "1081904182346403920",
+            "habbo": "Dakz"
+        },
+        {
+            "user_id": "423831123341344769",
+            "habbo": "D3athB1ad3_Alts"
+        },
+        {
+            "user_id": "279619172496048130",
+            "habbo": "YellowBanana."
+        },
+        {
+            "user_id": "331885160230551583",
+            "habbo": "qfreddp32"
+        },
+        {
+            "user_id": "805426349279150080",
+            "habbo": "enowi"
+        },
+        {
+            "user_id": "738314261092368384",
+            "habbo": "sweetiele"
+        },
+        {
+            "user_id": "1074651785140109362",
+            "habbo": "Aceconnorto"
+        },
+        {
+            "user_id": "618699441842552833",
+            "habbo": "thesakshipandey"
+        },
+        {
+            "user_id": "695674654995644466",
+            "habbo": "yourjuli4"
+        },
+        {
+            "user_id": "1349016073571401888",
+            "habbo": "UCalvin"
+        },
+        {
+            "user_id": "832718469610340442",
+            "habbo": "detailTheJock"
+        },
+        {
+            "user_id": "1252845171285168170",
+            "habbo": "DeltaBay"
+        },
+        {
+            "user_id": "759013679840231476",
+            "habbo": "hazelnut.com"
+        },
+        {
+            "user_id": "827883566352433152",
+            "habbo": "bufferinos"
+        },
+        {
+            "user_id": "1350804083916935238",
+            "habbo": "astarael"
+        },
+        {
+            "user_id": "274883912050802688",
+            "habbo": "KrissKrissu"
+        },
+        {
+            "user_id": "707770245003214879",
+            "habbo": "LepDane"
+        },
+        {
+            "user_id": "1352623464053477468",
+            "habbo": "mariella356"
+        },
+        {
+            "user_id": "1258938468793323622",
+            "habbo": "Yezeori"
+        },
+        {
+            "user_id": "458460723509592075",
+            "habbo": "Jeydee."
+        },
+        {
+            "user_id": "675230343875395613",
+            "habbo": "lalaviu"
+        },
+        {
+            "user_id": "851056319208620072",
+            "habbo": "habibiii_"
+        },
+        {
+            "user_id": "1347277080584261844",
+            "habbo": "aphroditeeee"
+        },
+        {
+            "user_id": "198335539529777153",
+            "habbo": "txurus"
+        },
+        {
+            "user_id": "940102192847786034",
+            "habbo": "EntityX0"
+        },
+        {
+            "user_id": "1074395977760379031",
+            "habbo": "plum."
+        },
+        {
+            "user_id": "1224166831359787140",
+            "habbo": "oxemilybabexo"
+        },
+        {
+            "user_id": "676847561268658191",
+            "habbo": "2frenchie"
+        },
+        {
+            "user_id": "1250136669743616062",
+            "habbo": "IrishQueen."
+        },
+        {
+            "user_id": "517693662155505694",
+            "habbo": "-overTHEhedge-"
+        },
+        {
+            "user_id": "1183938642201280653",
+            "habbo": "Shambles."
+        },
+        {
+            "user_id": "1060861905721360384",
+            "habbo": "katskillz21"
+        },
+        {
+            "user_id": "143313309452468224",
+            "habbo": "AZZY_MAGIC"
+        },
+        {
+            "user_id": "805710686114152508",
+            "habbo": "IfYouSeeKaye"
+        },
+        {
+            "user_id": "690924119390158868",
+            "habbo": "Luc_y"
+        },
+        {
+            "user_id": "483003019886067721",
+            "habbo": "Big_Papa_Dooles"
+        },
+        {
+            "user_id": "580767361905459208",
+            "habbo": "allyyyy"
+        },
+        {
+            "user_id": "567710145358856193",
+            "habbo": "pinyot"
+        },
+        {
+            "user_id": "1079521692667367596",
+            "habbo": ",Jade"
+        },
+        {
+            "user_id": "759104841166356500",
+            "habbo": "star5132"
+        },
+        {
+            "user_id": "931988346123739176",
+            "habbo": "PrettyJahanvi"
+        },
+        {
+            "user_id": "338677403708555274",
+            "habbo": "Aiko"
+        },
+        {
+            "user_id": "1092157333339127848",
+            "habbo": "Neurofortiac"
+        },
+        {
+            "user_id": "892227913016025139",
+            "habbo": "AcTiveSepain"
+        },
+        {
+            "user_id": "1363442652841775247",
+            "habbo": "NatashaHanbin"
+        },
+        {
+            "user_id": "1345020378677903457",
+            "habbo": "!DrunkMaster"
+        },
+        {
+            "user_id": "777454722079653898",
+            "habbo": "clarke_"
+        },
+        {
+            "user_id": "1060647233869070388",
+            "habbo": "DannyDD"
+        },
+        {
+            "user_id": "728033498056753194",
+            "habbo": "d0dgyjamm3r"
+        },
+        {
+            "user_id": "1287148616045170748",
+            "habbo": "MeRtWasHere"
+        },
+        {
+            "user_id": "743827757481459795",
+            "habbo": "Omorii"
+        },
+        {
+            "user_id": "880772829359009802",
+            "habbo": "nikaya-"
+        },
+        {
+            "user_id": "712721054853759108",
+            "habbo": "X.Sammi.X24"
+        },
+        {
+            "user_id": "884539394445430794",
+            "habbo": "-nekocho-"
+        },
+        {
+            "user_id": "1366012113621090335",
+            "habbo": "@Stephencurry30"
+        },
+        {
+            "user_id": "662410558368251939",
+            "habbo": "Civility"
+        },
+        {
+            "user_id": "388610160316252160",
+            "habbo": "Florescence"
+        },
+        {
+            "user_id": "433941245463625728",
+            "habbo": "-Okami."
+        },
+        {
+            "user_id": "360847681134002177",
+            "habbo": "chrst_ff"
+        },
+        {
+            "user_id": "613443100899147787",
+            "habbo": "sigmundd"
+        },
+        {
+            "user_id": "1162077038123950212",
+            "habbo": "Babyyghost"
+        },
+        {
+            "user_id": "573496224091602946",
+            "habbo": "kokoyo"
+        },
+        {
+            "user_id": "1285448055570825250",
+            "habbo": "SophiaReid"
+        },
+        {
+            "user_id": "604840142498430976",
+            "habbo": ".diplodocus."
+        },
+        {
+            "user_id": "77452058180988928",
+            "habbo": "MyrsloKn"
+        },
+        {
+            "user_id": "105390938741817344",
+            "habbo": "..-jackie-.."
+        },
+        {
+            "user_id": "1124421602713538620",
+            "habbo": "snowynn"
+        },
+        {
+            "user_id": "1011191057616228382",
+            "habbo": "IceBear0"
+        },
+        {
+            "user_id": "472899260975808534",
+            "habbo": "epicjoewi"
+        },
+        {
+            "user_id": "823395654977716235",
+            "habbo": "xxNoodlesxx"
+        },
+        {
+            "user_id": "318343773794861058",
+            "habbo": "aj68"
+        },
+        {
+            "user_id": "1179006851308855349",
+            "habbo": "Worldorks"
+        },
+        {
+            "user_id": "284760724147011585",
+            "habbo": "Adaption"
+        },
+        {
+            "user_id": "114707328254607361",
+            "habbo": "Koniro"
+        },
+        {
+            "user_id": "1322056089574834340",
+            "habbo": "DesmondXX"
+        },
+        {
+            "user_id": "385793416702853131",
+            "habbo": "Razedy"
+        },
+        {
+            "user_id": "704143740524167209",
+            "habbo": "..SlayerComel.."
+        },
+        {
+            "user_id": "1210297791046488094",
+            "habbo": "Speeding."
+        },
+        {
+            "user_id": "1327134854764298290",
+            "habbo": "Xorizo"
+        },
+        {
+            "user_id": "590045005461192723",
+            "habbo": "Lanz_Agent"
+        },
+        {
+            "user_id": "503354818946138142",
+            "habbo": "akms"
+        },
+        {
+            "user_id": "597672648721563677",
+            "habbo": "RenzJosei"
+        },
+        {
+            "user_id": "339896754776440833",
+            "habbo": "mrbenzedrine"
+        },
+        {
+            "user_id": "423249401671057408",
+            "habbo": ".Habboguest."
+        },
+        {
+            "user_id": "688756635862433805",
+            "habbo": "hafizees"
+        },
+        {
+            "user_id": "214454627154919424",
+            "habbo": "tasteSAM"
+        },
+        {
+            "user_id": "292291825203675136",
+            "habbo": "Kirby1712"
+        },
+        {
+            "user_id": "1373358734239338686",
+            "habbo": "Macylove"
+        },
+        {
+            "user_id": "322369248594886659",
+            "habbo": ".::LySa::."
+        },
+        {
+            "user_id": "956891475621322843",
+            "habbo": "Eheee!"
+        },
+        {
+            "user_id": "1175307500686409728",
+            "habbo": "Dal-Rae"
+        },
+        {
+            "user_id": "692699961074253824",
+            "habbo": "Blythe987"
+        },
+        {
+            "user_id": "1303801789841412157",
+            "habbo": "MissyK_x"
+        },
+        {
+            "user_id": "877138243253076058",
+            "habbo": "nullejaeden2"
+        },
+        {
+            "user_id": "965189690024144956",
+            "habbo": "xlourex"
+        },
+        {
+            "user_id": "691131483334770709",
+            "habbo": "Baim."
+        },
+        {
+            "user_id": "907155914065326130",
+            "habbo": "whvb"
+        },
+        {
+            "user_id": "366689552485842944",
+            "habbo": "randyz"
+        },
+        {
+            "user_id": "286452990892834818",
+            "habbo": "Damianmp3"
+        },
+        {
+            "user_id": "382848909598392320",
+            "habbo": "Snupeey"
+        },
+        {
+            "user_id": "869096072704819220",
+            "habbo": "Le!la"
+        },
+        {
+            "user_id": "1203497372756349038",
+            "habbo": "Melodee"
+        },
+        {
+            "user_id": "447527398787776526",
+            "habbo": "Confusable"
+        },
+        {
+            "user_id": "847219524016668684",
+            "habbo": "MIL.EAf"
+        },
+        {
+            "user_id": "1154610057892343909",
+            "habbo": "Zhaf_Andrew"
+        },
+        {
+            "user_id": "1222896351587729428",
+            "habbo": "lyxa18"
+        },
+        {
+            "user_id": "717300887089053728",
+            "habbo": "MinejetpackXD"
+        },
+        {
+            "user_id": "986948164839948288",
+            "habbo": "Tenj1"
+        },
+        {
+            "user_id": "1360080024253894786",
+            "habbo": "ypeacej3rd"
+        },
+        {
+            "user_id": "1358076049384017982",
+            "habbo": "Inara.Ziyana"
+        },
+        {
+            "user_id": "690102360105680988",
+            "habbo": "@IamJeanetteee"
+        },
+        {
+            "user_id": "772467874336997396",
+            "habbo": "KodakaHase"
+        },
+        {
+            "user_id": "1168002455913627699",
+            "habbo": "TheDisciple"
+        },
+        {
+            "user_id": "445991801636126721",
+            "habbo": "Meoli"
+        },
+        {
+            "user_id": "582773448259010608",
+            "habbo": "Rownek"
+        },
+        {
+            "user_id": "320194017138835467",
+            "habbo": "Dragons1"
+        },
+        {
+            "user_id": "1117991394863235153",
+            "habbo": "yurn"
+        },
+        {
+            "user_id": "248444862834278400",
+            "habbo": "sin011"
+        },
+        {
+            "user_id": "1377563472539291658",
+            "habbo": "KingBob_"
+        },
+        {
+            "user_id": "1344267308201152574",
+            "habbo": "MaliekOwel98"
+        },
+        {
+            "user_id": "846757117544759347",
+            "habbo": "kxmylle"
+        },
+        {
+            "user_id": "1248672792631836692",
+            "habbo": "GigiP4"
+        },
+        {
+            "user_id": "409658496850722828",
+            "habbo": "NICOLEYMQ"
+        },
+        {
+            "user_id": "1291556679598477393",
+            "habbo": "QuandoPurp"
+        },
+        {
+            "user_id": "1345898958093946952",
+            "habbo": "BeccaW2207"
+        },
+        {
+            "user_id": "1282194976683331625",
+            "habbo": "xViannyx"
+        },
+        {
+            "user_id": "1363741475870871662",
+            "habbo": "Zaim97"
+        },
+        {
+            "user_id": "500445715386990603",
+            "habbo": "ASHSD"
+        },
+        {
+            "user_id": "705826047719112734",
+            "habbo": "Aleeeeex13"
+        },
+        {
+            "user_id": "423514083568910337",
+            "habbo": "metalsonic1290"
+        },
+        {
+            "user_id": "715265754144178337",
+            "habbo": "jiyuuu"
+        },
+        {
+            "user_id": "377080154976944131",
+            "habbo": "vincent89314"
+        },
+        {
+            "user_id": "697468560938631248",
+            "habbo": ":spy"
+        },
+        {
+            "user_id": "418162265255313408",
+            "habbo": "kiwiissx"
+        },
+        {
+            "user_id": "889244980001005588",
+            "habbo": "Ruth-On-Toast"
+        },
+        {
+            "user_id": "776152163168682025",
+            "habbo": "Betty_T"
+        },
+        {
+            "user_id": "559731867864006677",
+            "habbo": ":PibolsGotBan:"
+        },
+        {
+            "user_id": "310986729110634508",
+            "habbo": "Zuui"
+        },
+        {
+            "user_id": "503040536870125569",
+            "habbo": "donita090"
+        },
+        {
+            "user_id": "1303968903839350797",
+            "habbo": "Giana.a"
+        },
+        {
+            "user_id": "273164734667423744",
+            "habbo": "pxvc"
+        },
+        {
+            "user_id": "340404442459275264",
+            "habbo": ".ana"
+        },
+        {
+            "user_id": "277928760244699136",
+            "habbo": "Bradderz."
+        },
+        {
+            "user_id": "1239212878314340464",
+            "habbo": "xurina"
+        },
+        {
+            "user_id": "853215691594530867",
+            "habbo": ".Lunar"
+        },
+        {
+            "user_id": "1070492351094591518",
+            "habbo": "Callie.."
+        },
+        {
+            "user_id": "251141228752535552",
+            "habbo": "lokiemil72"
+        },
+        {
+            "user_id": "1255128943863009310",
+            "habbo": "KaaLegend"
+        },
+        {
+            "user_id": "741009579965546648",
+            "habbo": "MikkeeAnn20"
+        },
+        {
+            "user_id": "754372427592761385",
+            "habbo": ".azula"
+        },
+        {
+            "user_id": "1382817460734005379",
+            "habbo": "SwiftieZoe"
+        },
+        {
+            "user_id": "969667754045079563",
+            "habbo": "xMats."
+        },
+        {
+            "user_id": "644939495082295317",
+            "habbo": "-ilker"
+        },
+        {
+            "user_id": "484955976257110027",
+            "habbo": "izumo"
+        },
+        {
+            "user_id": "878887778652389377",
+            "habbo": "_Lexithegreat"
+        },
+        {
+            "user_id": "736792271810461777",
+            "habbo": ".divine"
+        },
+        {
+            "user_id": "1244050468838309939",
+            "habbo": "chrisdirico19"
+        },
+        {
+            "user_id": "1015541697452724295",
+            "habbo": "spencer-.-"
+        },
+        {
+            "user_id": "692744640524451860",
+            "habbo": "was2004"
+        },
+        {
+            "user_id": "780983522416525373",
+            "habbo": "sarahmiller"
+        },
+        {
+            "user_id": "815736754651922442",
+            "habbo": "IWantMommyGF"
+        },
+        {
+            "user_id": "1384927216361541724",
+            "habbo": "beccaw2207"
+        },
+        {
+            "user_id": "1369063645799252058",
+            "habbo": "impromptuara"
+        },
+        {
+            "user_id": "1385485739357110282",
+            "habbo": "Explz"
+        },
+        {
+            "user_id": "725008201661022271",
+            "habbo": ".tuppence."
+        },
+        {
+            "user_id": "1243160542231924850",
+            "habbo": "susie._"
+        },
+        {
+            "user_id": "1386434560358613163",
+            "habbo": "RiseofLuna"
+        },
+        {
+            "user_id": "1386759415180296384",
+            "habbo": "Vozy"
+        },
+        {
+            "user_id": "672412856968544276",
+            "habbo": "Neocortez"
+        },
+        {
+            "user_id": "859674632520859668",
+            "habbo": "VorpalX"
+        },
+        {
+            "user_id": "1193441214465314828",
+            "habbo": "AmirFarhan42"
+        },
+        {
+            "user_id": "332700136956362763",
+            "habbo": "MayconDgs"
+        },
+        {
+            "user_id": "976538947935146084",
+            "habbo": "Ddeonu,"
+        },
+        {
+            "user_id": "271991754692100097",
+            "habbo": "K3zz0"
+        },
+        {
+            "user_id": "735869213922558052",
+            "habbo": "sleepypanda"
+        },
+        {
+            "user_id": "755294882003681291",
+            "habbo": "chlea."
+        },
+        {
+            "user_id": "721606698850320425",
+            "habbo": "cremelatte"
+        },
+        {
+            "user_id": "609123985363304610",
+            "habbo": "kooii"
+        },
+        {
+            "user_id": "935890441730129971",
+            "habbo": "O=Hidayat=O"
+        },
+        {
+            "user_id": "186149156425957376",
+            "habbo": "-Ingenium-."
+        },
+        {
+            "user_id": "858740739256877088",
+            "habbo": "cupycakes"
+        },
+        {
+            "user_id": "537727097557352478",
+            "habbo": "Piccar!"
+        },
+        {
+            "user_id": "109242814839132160",
+            "habbo": "fierycomet"
+        },
+        {
+            "user_id": "1378489226055913642",
+            "habbo": "aphaeax"
+        },
+        {
+            "user_id": "761762125579550760",
+            "habbo": "pinkskiess"
+        },
+        {
+            "user_id": "702285398591799407",
+            "habbo": "Ayeshaaa"
+        },
+        {
+            "user_id": "1394469312831422606",
+            "habbo": "jemsrid"
+        },
+        {
+            "user_id": "220439485941284864",
+            "habbo": "Pugnono"
+        },
+        {
+            "user_id": "342427866245365760",
+            "habbo": "George@W@Jr"
+        },
+        {
+            "user_id": "929454577344978944",
+            "habbo": "BADX.me"
+        },
+        {
+            "user_id": "1282251063281582251",
+            "habbo": "_xxc"
+        },
+        {
+            "user_id": "745293138318590032",
+            "habbo": "larcxd"
+        },
+        {
+            "user_id": "1180580717093212201",
+            "habbo": "Joshhiii"
+        },
+        {
+            "user_id": "451545570209693696",
+            "habbo": "Will!"
+        },
+        {
+            "user_id": "1369693244895526962",
+            "habbo": "Tekagii"
+        },
+        {
+            "user_id": "868666948098080848",
+            "habbo": "JxrryDeMan"
+        },
+        {
+            "user_id": "572710505202974740",
+            "habbo": "RobanJohnson"
+        },
+        {
+            "user_id": "1127238899878604801",
+            "habbo": "chiro."
+        },
+        {
+            "user_id": "693639490153087076",
+            "habbo": "midisk_xwlasa"
+        },
+        {
+            "user_id": "157171354511081472",
+            "habbo": "SlyCo"
+        },
+        {
+            "user_id": "1398584319622254643",
+            "habbo": "colaaa."
+        },
+        {
+            "user_id": "1208210847315271743",
+            "habbo": "wanderlust"
+        },
+        {
+            "user_id": "677685621753643029",
+            "habbo": "sk33r"
+        },
+        {
+            "user_id": "806935287920984145",
+            "habbo": "@-MagicMaster-@"
+        },
+        {
+            "user_id": "764377917756145664",
+            "habbo": "k.honey"
+        },
+        {
+            "user_id": "431425102434009088",
+            "habbo": ".Stress."
+        },
+        {
+            "user_id": "311217015064887296",
+            "habbo": "prsnt"
+        },
+        {
+            "user_id": "1270389817544282182",
+            "habbo": "PineappleJuice_"
+        },
+        {
+            "user_id": "565538700910526477",
+            "habbo": "apez23"
+        },
+        {
+            "user_id": "317380049600905226",
+            "habbo": "calvinchen1"
+        },
+        {
+            "user_id": "940478452673429524",
+            "habbo": "@jughead"
+        },
+        {
+            "user_id": "1393639535308570794",
+            "habbo": "purple2"
+        },
+        {
+            "user_id": "587252529247682560",
+            "habbo": "zZzMr.RyzZz"
+        },
+        {
+            "user_id": "298121351871594497",
+            "habbo": "Siren"
+        },
+        {
+            "user_id": "189091409591140354",
+            "habbo": "billy963"
+        },
+        {
+            "user_id": "716001084220506213",
+            "habbo": ".tee"
+        },
+        {
+            "user_id": "984832909036904449",
+            "habbo": "-Charles"
+        },
+        {
+            "user_id": "834205113882509332",
+            "habbo": "03:jasmine:03"
+        },
+        {
+            "user_id": "609506852950114336",
+            "habbo": "Rhys185"
+        },
+        {
+            "user_id": "1314253494370173010",
+            "habbo": "Bexhie"
+        },
+        {
+            "user_id": "1310716102027776062",
+            "habbo": "Eden2110"
+        },
+        {
+            "user_id": "1403839627676356609",
+            "habbo": "TimeTooCry-"
+        },
+        {
+            "user_id": "782291447226302486",
+            "habbo": "Mihetsu"
+        },
+        {
+            "user_id": "749424831845629963",
+            "habbo": "A86"
+        },
+        {
+            "user_id": "123367788998819840",
+            "habbo": "1flyingstars"
+        },
+        {
+            "user_id": "1251195648284430397",
+            "habbo": "_heejin"
+        },
+        {
+            "user_id": "950538994729492520",
+            "habbo": "WinterSnow2021"
+        },
+        {
+            "user_id": "1276508394404184074",
+            "habbo": "-ggg"
+        },
+        {
+            "user_id": "746455710417813694",
+            "habbo": "XAIXXKX"
+        },
+        {
+            "user_id": "607610237549281340",
+            "habbo": "octavia199x"
+        },
+        {
+            "user_id": "556774959691726859",
+            "habbo": "Shinichilaaabs"
+        },
+        {
+            "user_id": "425072253852450828",
+            "habbo": "andmandawaslike"
+        },
+        {
+            "user_id": "1345395715353874513",
+            "habbo": "xXHell-ghoulXx"
+        },
+        {
+            "user_id": "210932469724086272",
+            "habbo": "SkullOG"
+        },
+        {
+            "user_id": "405837455758065665",
+            "habbo": "chris90110"
+        },
+        {
+            "user_id": "804922520733351956",
+            "habbo": "Personalities."
+        },
+        {
+            "user_id": "1357710781030076528",
+            "habbo": "Matt84"
+        },
+        {
+            "user_id": "309030602227712000",
+            "habbo": "External."
+        },
+        {
+            "user_id": "1392995912095109130",
+            "habbo": "safia1010"
+        },
+        {
+            "user_id": "318727652947132416",
+            "habbo": "Protestor32"
+        },
+        {
+            "user_id": "177865713460051968",
+            "habbo": "Ger."
+        },
+        {
+            "user_id": "726543884238323745",
+            "habbo": "cloudox"
+        },
+        {
+            "user_id": "710206476496404554",
+            "habbo": "urn?"
+        },
+        {
+            "user_id": "973938785609973771",
+            "habbo": "Stacey"
+        },
+        {
+            "user_id": "1027362531678896178",
+            "habbo": "XxxTrayxxX"
+        },
+        {
+            "user_id": "857678723079471135",
+            "habbo": "WonhoVampfie"
+        },
+        {
+            "user_id": "1406163513637863507",
+            "habbo": "Takim"
+        },
+        {
+            "user_id": "459689854448435201",
+            "habbo": "Marou_28"
+        },
+        {
+            "user_id": "437643392055509002",
+            "habbo": "Sindy2418"
+        },
+        {
+            "user_id": "316713524057341952",
+            "habbo": "Psych."
+        },
+        {
+            "user_id": "888953106619052033",
+            "habbo": "AceTiger2K18"
+        },
+        {
+            "user_id": "393027115794169856",
+            "habbo": "FaBashh"
+        },
+        {
+            "user_id": "1224966934278443019",
+            "habbo": "nabbo86"
+        },
+        {
+            "user_id": "719665123916251167",
+            "habbo": "Melonn"
+        },
+        {
+            "user_id": "432837996530892801",
+            "habbo": "stefffuuu"
+        },
+        {
+            "user_id": "1404589618795515944",
+            "habbo": "Alessandro!"
+        },
+        {
+            "user_id": "533916383415894028",
+            "habbo": "Yukiniku"
+        },
+        {
+            "user_id": "846160510087987241",
+            "habbo": "Miruma"
+        },
+        {
+            "user_id": "1328649114136612864",
+            "habbo": "alen47"
+        },
+        {
+            "user_id": "672445248798064651",
+            "habbo": "@Jax"
+        },
+        {
+            "user_id": "1412455522388541561",
+            "habbo": "nunsongi"
+        },
+        {
+            "user_id": "1307396606579970048",
+            "habbo": "Kirstxoox"
+        },
+        {
+            "user_id": "369720239329640448",
+            "habbo": "d-jeannette-b"
+        },
+        {
+            "user_id": "1309718980574974063",
+            "habbo": "Brandy2023"
+        },
+        {
+            "user_id": "666228329158017024",
+            "habbo": "Ashsolfy"
+        },
+        {
+            "user_id": "872292885104570429",
+            "habbo": "Alai-a"
+        },
+        {
+            "user_id": "1129279059323527189",
+            "habbo": "Kaiten"
+        },
+        {
+            "user_id": "1414794704679338095",
+            "habbo": "Hamartia"
+        },
+        {
+            "user_id": "1292786808219893775",
+            "habbo": "starluck"
+        },
+        {
+            "user_id": "948143855860060210",
+            "habbo": "kythe"
+        },
+        {
+            "user_id": "1183206572671905873",
+            "habbo": "Gobimaru"
+        },
+        {
+            "user_id": "709577251460481124",
+            "habbo": "ChrisRS"
+        },
+        {
+            "user_id": "385686796119441408",
+            "habbo": "JanessaLim"
+        },
+        {
+            "user_id": "1254730497016467490",
+            "habbo": "KillerTomato"
+        },
+        {
+            "user_id": "1203949712953319504",
+            "habbo": "fraudbible"
+        },
+        {
+            "user_id": "200984087094099971",
+            "habbo": "-roar"
+        },
+        {
+            "user_id": "793356822656450602",
+            "habbo": "-avocadorable"
+        },
+        {
+            "user_id": "583245687991566336",
+            "habbo": "Babydoll1997!"
+        },
+        {
+            "user_id": "1396367915812655176",
+            "habbo": "!Mamii-Ciara!"
+        },
+        {
+            "user_id": "1415322832208138341",
+            "habbo": "hanayudai"
+        },
+        {
+            "user_id": "635222353101455381",
+            "habbo": "Hasroy"
+        },
+        {
+            "user_id": "466547902517608479",
+            "habbo": "saturncycle"
+        },
+        {
+            "user_id": "1096648323445825597",
+            "habbo": "sloomy"
+        },
+        {
+            "user_id": "1398142082757165076",
+            "habbo": "steffrz"
+        },
+        {
+            "user_id": "1300186465111642182",
+            "habbo": "mwuh"
+        },
+        {
+            "user_id": "1393950301244887041",
+            "habbo": "DJRYO"
+        },
+        {
+            "user_id": "768806063339864085",
+            "habbo": "msrenerene"
+        },
+        {
+            "user_id": "763335841074380810",
+            "habbo": "niaa__26"
+        },
+        {
+            "user_id": "743759386010189845",
+            "habbo": "txro"
+        },
+        {
+            "user_id": "380842531145121805",
+            "habbo": "Mariah."
+        },
+        {
+            "user_id": "1363472753277014190",
+            "habbo": "=KnightFury="
+        },
+        {
+            "user_id": "1417334828533289120",
+            "habbo": "hanamairu"
+        },
+        {
+            "user_id": "326897638207127552",
+            "habbo": "Urabrask"
+        },
+        {
+            "user_id": "1002847061227602011",
+            "habbo": "xgianx27"
+        },
+        {
+            "user_id": "630976569736822787",
+            "habbo": "Siao"
+        },
+        {
+            "user_id": "455687358583406603",
+            "habbo": "GoneDownToHill"
+        },
+        {
+            "user_id": "1425573744797159434",
+            "habbo": "!Mamii-Ciara!"
+        },
+        {
+            "user_id": "1269199716441391146",
+            "habbo": "callmecHKZ"
+        },
+        {
+            "user_id": "1066061928088227961",
+            "habbo": "BladeCore"
+        },
+        {
+            "user_id": "756150760848228452",
+            "habbo": "-Ranger_"
+        },
+        {
+            "user_id": "1408522474039283753",
+            "habbo": "Kathy360"
+        },
+        {
+            "user_id": "245101036216254466",
+            "habbo": "Demize"
+        },
+        {
+            "user_id": "1226346489257918568",
+            "habbo": "Namoshi"
+        },
+        {
+            "user_id": "1373397397886996551",
+            "habbo": "dulceandgabanna"
+        },
+        {
+            "user_id": "451272714712383491",
+            "habbo": "Pepparpaj"
+        },
+        {
+            "user_id": "336846320633643008",
+            "habbo": "JasonTheWolfie"
+        },
+        {
+            "user_id": "1349385290317434951",
+            "habbo": "Jackdawson7"
+        },
+        {
+            "user_id": "759837370505494528",
+            "habbo": "Thermodynamic"
+        },
+        {
+            "user_id": "1058217801720025118",
+            "habbo": "CatchyaLater"
+        },
+        {
+            "user_id": "315762322482135041",
+            "habbo": "NumberTwo"
+        },
+        {
+            "user_id": "744649117262938144",
+            "habbo": "alixandrias"
+        },
+        {
+            "user_id": "1194096775066288200",
+            "habbo": "LKC"
+        },
+        {
+            "user_id": "414859766016245780",
+            "habbo": "AbsolutSlayer"
+        },
+        {
+            "user_id": "1352047906525413416",
+            "habbo": "svetozar"
+        },
+        {
+            "user_id": "1021065449963782144",
+            "habbo": "PixelPrincessx"
+        },
+        {
+            "user_id": "806497315279863808",
+            "habbo": "Ysai"
+        },
+        {
+            "user_id": "934536262738657341",
+            "habbo": "irving524"
+        },
+        {
+            "user_id": "1096588313986617435",
+            "habbo": "q.:Axel:.p"
+        },
+        {
+            "user_id": "1237730598207094825",
+            "habbo": "Tay.."
+        },
+        {
+            "user_id": "1387465571481944299",
+            "habbo": "MaliekOwel98"
+        },
+        {
+            "user_id": "282126061179764738",
+            "habbo": "seanraimiel"
+        },
+        {
+            "user_id": "1398483889881616435",
+            "habbo": "Bozonaro"
+        },
+        {
+            "user_id": "876891993932980245",
+            "habbo": "Cozykayy"
+        },
+        {
+            "user_id": "364039015118274560",
+            "habbo": "mouzakii"
+        },
+        {
+            "user_id": "1062366389983252532",
+            "habbo": ".DoII"
+        },
+        {
+            "user_id": "1306269005304172669",
+            "habbo": "Atheon"
+        },
+        {
+            "user_id": "521700888755044353",
+            "habbo": ",jamiexo"
+        },
+        {
+            "user_id": "1436860147589713981",
+            "habbo": ".Amira."
+        },
+        {
+            "user_id": "432584687572090880",
+            "habbo": "BigBen."
+        },
+        {
+            "user_id": "963836887418687508",
+            "habbo": "Danielxo"
+        },
+        {
+            "user_id": "875609653948600350",
+            "habbo": "w!ndex"
+        },
+        {
+            "user_id": "1429744894439591990",
+            "habbo": "Desnake"
+        },
+        {
+            "user_id": "1437372429369475196",
+            "habbo": "Peverell,"
+        },
+        {
+            "user_id": "349656586253238272",
+            "habbo": "bobjim99"
+        },
+        {
+            "user_id": "1434809309887467520",
+            "habbo": "CherryBabyy"
+        },
+        {
+            "user_id": "358805489729142786",
+            "habbo": "Shepardspie"
+        },
+        {
+            "user_id": "1252031181017452685",
+            "habbo": "ayraynit"
+        },
+        {
+            "user_id": "558360330464526336",
+            "habbo": ":Hasanz"
+        },
+        {
+            "user_id": "1439866895498084362",
+            "habbo": "Le!la"
+        },
+        {
+            "user_id": "1263428137912373291",
+            "habbo": "Gleamingskyline"
+        },
+        {
+            "user_id": "1440271877787357194",
+            "habbo": "Declinence"
+        }
+    ],
+    "balances": {
+        "298121351871594497": 1980160000,
+        "175708841332178945": 500
+    },
+    "user_channels": {
+        "177865713460051968": {
+            "text": [
+                1345485046869655643
+            ]
+        },
+        "298121351871594497": {
+            "text": [
+                1345490183461539890
+            ],
+            "invited_users": [
+                175708841332178945
+            ]
+        }
+    }
+}

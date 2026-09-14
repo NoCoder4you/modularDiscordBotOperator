@@ -1,0 +1,235 @@
+{
+    "roles": {
+        "EmployeeRoles": [
+            {
+                "role_id": 1249815084302336050,
+                "role_name": "Foundation",
+                "group_id": "g-hhus-f2ff312e42c3f114fa44156e6ed1db51",
+                "group_name": "Founder",
+                "cdaemployee": "yes",
+                "iC": "yes"
+            },
+            {
+                "role_id": 1249814481622663291,
+                "role_name": "Founders Representative",
+                "group_id": "g-hhus-91df4572a2ab99340d25f4988e050ad4",
+                "group_name": "Founder Representatives",
+                "cdaemployee": "yes",
+                "iC": "yes"
+            },
+            {
+                "role_id": 1250835206575886468,
+                "role_name": "Ownership",
+                "group_id": "g-hhus-77ff7187fde6a55618eb239826803b9b",
+                "cdaemployee": "yes",
+                "iC": "yes"
+            },
+            {
+                "role_id": 1249814946951204874,
+                "role_name": "Board of Directorates",
+                "group_id": "g-hhus-ca776f81e2334c95313b5c7e097d117b",
+                "cdaemployee": "yes",
+                "iC": "yes"
+            },
+            {
+                "role_id": 1249814886825853008,
+                "role_name": "Executive Board of Legislatures",
+                "group_id": "g-hhus-ec91335255f2144d4b851ec4ec93155d",
+                "group_name": "Ex.Board of Legislature",
+                "cdaemployee": "yes",
+                "iC": "yes"
+            },
+            {
+                "role_id": 1249814653006249994,
+                "role_name": "Judicial Cabinet",
+                "group_id": "g-hhus-58e9d3212a827e14847e94af0d9e9276",
+                "cdaemployee": "yes",
+                "iC": "yes"
+            },
+            {
+                "role_id": 1303056908353278032,
+                "role_name": "Diplomatic Cabinet",
+                "group_id": "g-hhus-1e272ac746b57da55af0ca23ef96f0ca",
+                "cdaemployee": "yes",
+                "iC": "yes"
+            },
+            {
+                "role_id": 1249812768618446961,
+                "role_name": "Trial iC",
+                "group_id": "g-hhus-41fb8f9fba3bdef47a4958e6de88c4d1",
+                "cdaemployee": "yes",
+                "iC": "yes"
+            },
+            {
+                "role_id": 1278142154363113522,
+                "role_name": "Presidential",
+                "group_id": "g-hhus-48c3b0df98e1114530c366ce9abcdd47",
+                "group_name": "President",
+                "cdaemployee": "yes"
+            },
+            {
+                "role_id": 1278142090236395613,
+                "role_name": "Office of Administration",
+                "group_id": "g-hhus-36920acbeec1415a008ecc2806acecf4",
+                "group_name": "OOA",
+                "cdaemployee": "yes"
+            },
+            {
+                "role_id": 1278142129549607016,
+                "role_name": "Leadership",
+                "group_id": "g-hhus-336bf21abdfeb4817f8a3c022b755b50",
+                "cdaemployee": "yes"
+            },
+            {
+                "role_id": 1278142014575214696,
+                "role_name": "Government",
+                "group_id": "g-hhus-5c4f40d18dde73b7723965e7021083ec",
+                "cdaemployee": "yes"
+            },
+            {
+                "role_id": 1278141969541103690,
+                "role_name": "Senior Management",
+                "group_id": "g-hhus-3f2aafbf275ccc54f6551896c28a8609",
+                "cdaemployee": "yes"
+            },
+            {
+                "role_id": 1278141912125014067,
+                "role_name": "High Management",
+                "group_id": "g-hhus-97e1cea3350c5a850a88d69682d0d598",
+                "cdaemployee": "yes"
+            },
+            {
+                "role_id": 1278141877484523662,
+                "role_name": "Management",
+                "group_id": "g-hhus-6af03c3f78f6a481677c166d8ca4053d",
+                "cdaemployee": "yes"
+            },
+            {
+                "role_id": 1278141767597690880,
+                "role_name": "Internal Operations",
+                "group_id": "g-hhus-38181050f4cec8450bd7bedd5369cc7b",
+                "cdaemployee": "yes"
+            },
+            {
+                "role_id": 1278141724299886652,
+                "role_name": "High Rank",
+                "group_id": "g-hhus-48700bb19323d1ec8a7ad0a0fc419841",
+                "cdaemployee": "yes"
+            },
+            {
+                "role_id": 1278141699113222205,
+                "role_name": "Trainer",
+                "group_id": "g-hhus-1bcd0a77fbbf55b593cadfcdb9feb335",
+                "cdaemployee": "yes"
+            },
+            {
+                "role_id": 1278141568515182622,
+                "role_name": "Security",
+                "group_id": "g-hhus-ece8e742a4a53b62371b1ed33e4cac50",
+                "cdaemployee": "yes"
+            }
+        ],
+        "SpecialUnits": [
+            {
+                "role_id": 1272297904522006702,
+                "role_name": "Finance\n",
+                "group_id": "g-hhus-3dd5696b5866be82b37b1a522594b5fc"
+            },
+            {
+                "role_id": 1328493632604344340,
+                "role_name": "EA Diplomat\n",
+                "group_id": "g-hhus-7ac8f10bd740bef809a06cb63c641f89"
+            },
+            {
+                "role_id": 1288128962634977441,
+                "role_name": "Events\n",
+                "group_id": "g-hhus-6a2018a03b0954ebee263b3892e4b088"
+            },
+            {
+                "role_id": 1328490933997666346,
+                "role_name": "Internal Affairs\n",
+                "group_id": "g-hhus-2bd58390f640acc956995e4e3cb6a4c0"
+            },
+            {
+                "role_id": 1279211473310191638,
+                "role_name": "Transfer\n",
+                "group_id": "g-hhus-4d15f91614215c1e7d9d55401d2fd1c4"
+            },
+                        {
+                "role_id": 1328499335691767898,
+                "role_name": "Public Relations\n",
+                "group_id": "g-hhus-a568ba32e17278abf1c6708cf5b51a3d"
+            }
+        ],
+        "DonatorRoles": [
+            {
+                "role_id": 1344659660711526420,
+                "role_name": "Emerald",
+                "group_id": "g-hhus-b8eed0e48e947bbeb45912ddac62e8b0",
+                "cdaemployee": "no"
+            },
+            {
+                "role_id": 1344659098205028383,
+                "role_name": "Sapphire",
+                "group_id": "g-hhus-8f7f6a3fe749b7674319127036bc2058",
+                "cdaemployee": "no"
+            },
+            {
+                "role_id": 1268955216380825620,
+                "role_name": "Ruby",
+                "group_id": "g-hhus-6ae96dea9ca14f1d3b679fff9c8eb24e",
+                "cdaemployee": "no"
+            },
+            {
+                "role_id": 1268954522525630544,
+                "role_name": "Diamond",
+                "group_id": "g-hhus-68a2eed7a3f6bd244a53b7f6e41bb5d1",
+                "cdaemployee": "no"
+            },
+            {
+                "role_id": 1268954350915682406,
+                "role_name": "Gold",
+                "group_id": "g-hhus-8e59436bd507332161b868dadb2adc00",
+                "cdaemployee": "no"
+            },
+            {
+                "role_id": 1268954216295305228,
+                "role_name": "Silver",
+                "group_id": "g-hhus-dd64c8b9cd3151a8b693e53780855af5",
+                "cdaemployee": "no"
+            },
+            {
+                "role_id": 1268953910710894663,
+                "role_name": "Bronze",
+                "group_id": "g-hhus-e92c0409d1f57e009caff60ca49bc19b",
+                "cdaemployee": "no"
+            }
+        ],
+        "Misc": [
+            {
+                "role_id": 1346492764396716146,
+                "role_name": "**__Bot Developer__**\n",
+                "group_id": "g-hhus-be3e8749963cc9a18778701c3fc6e8cb",
+                "cdaemployee": "no"
+            },
+            {
+                "role_id": 1303822085641998346,
+                "role_name": "Veteran\n",
+                "group_id": "g-hhus-095fde8c98a775bf28c18f5942400de4",
+                "cdaemployee": "no"
+            },
+            {
+                "role_id": 1332731911189303306,
+                "role_name": "Diplomatic ID\n",
+                "group_id": "g-hhus-0dca0dc27a444e6b47c79a9e327572b7",
+                "cdaemployee": "no"
+            },
+            {
+                "role_id": 1249423888677601392,
+                "role_name": "Special Visitor\n",
+                "group_id": "g-hhus-566a174afe407234b3d50b0a6c290209",
+                "cdaemployee": "no"
+            }
+        ]
+    }
+}

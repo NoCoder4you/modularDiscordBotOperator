@@ -1,0 +1,115 @@
+{
+    "banned_users": {
+        "BoS": {
+            "Johnny15Adam": {
+                "Reason": "Poaching"
+            },
+            "Rundstedian": {
+                "Reason": "Constant Harrasment & Bullying"
+            },
+            "Pengsoo6197": {
+                "Reason": "Bullying & Harrassment"
+            },
+            "alexza81": {
+                "Reason": "Poaching"
+            },
+            "Kissesfromabove": {
+                "Reason": "Double Jobbing"
+            },
+            "Hafsa24": {
+                "Reason": "Double Jobbing"
+            },
+            "fierycomet": {
+                "Reason": "Racist/Disrespectful behaviour"
+            },
+            "Ja-K": {
+                "Reason": "Theft - CDA funds(6k+)"
+            },
+            "Humaning": {
+                "Reason": "Theft - CDA funds(6k+)"
+            },
+            "Eclypsya": {
+                "Reason": "Theft - CDA funds(6k+)"
+            },
+            "Sirek": {
+                "Reason": "Theft - CDA funds(6k+)"
+            },
+            "mariogabri32": {
+                "Reason": "Sexual assault/threatning"
+            },
+            "Ubelatte": {
+                "Reason": "IWO"
+            },
+            "Kimdragon88_ALT": {
+                "Reason": "Bullying & Harrasment"
+            }
+        },
+        "DNH": {
+            "Sirrig": {
+                "Reason": "Based on Previous Behaviour (Misconduct, Disrespectful)"
+            },
+            "R3AP": {
+                "Reason": "Double Jobbing"
+            },
+            "BamItzGlenn": {
+                "Reason": "Threatening Members"
+            },
+            "luckykat": {
+                "Reason": "lets just keep this one"
+            },
+            "Shambles.": {
+                "Reason": "4 leave from agency"
+            },
+            "sleepypanda": {
+                "Reason": "Double Jobbing"
+            },
+            "Adachi.": {
+                "Reason": "Double Jobbing"
+            },
+            "_lexithegreat": {
+                "Reason": "Double Jobbing"
+            },
+            "unscreepted": {
+                "Reason": "Double Jobbing"
+            },
+            "Blythe987": {
+                "Reason": "Double Jobbing"
+            },
+            "-Nick...": {
+                "Reason": "Disrespectful of foundation & TU"
+            },
+            "Shambles": {
+                "Reason": "Left too many times (5x)"
+            },
+            "astarael": {
+                "Reason": "Disloyalty/using CDA as temporary agency/broke CDA rule"
+            },
+            "xVoxie": {
+                "Reason": "No reason provided"
+            }
+        },
+        "NP": {
+            "Zorloft": {
+                "Reason": "Doxxing"
+            },
+            "Positron": {
+                "Reason": "Doxxing"
+            },
+            "Ubelatte": {
+                "Reason": "IWO"
+            }
+        }
+    },
+    "banned_groups": [
+        {
+            "name": "NYPD",
+            "reason": "Poaching",
+            "badge_id": "g-hhus-cb4ec70e84f9393fd2507ef05e25ecc6"
+        },
+        {
+            "name": "FBI",
+            "reason": "Plagiarism, Unprofessionalim & Misconduct",
+            "badge_id": "g-hhus-9712f7aa8a368cb332dfb1c1460270e"
+        }
+    ]
+}
