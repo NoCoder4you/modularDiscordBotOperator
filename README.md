@@ -1,6 +1,6 @@
 # modularDiscordBotOperator
 
-A production-oriented management monorepo being built for **CDA Admin**, **CDA Pay**, **UNBOT**, and **RPA Admin**. Stage 1 establishes contracts and safety primitives; it does **not** migrate or run those four bots.
+A production-oriented management monorepo for four independently migrated Discord applications: **CDA Admin**, **CDA Pay**, **UNBOT**, and **RPA Admin**. Stage 6 completed the architecture/readiness review; production supervisor and portal controls remain intentionally unimplemented.
 
 ## Architecture
 
@@ -18,7 +18,7 @@ flowchart TD
 
 ## Repository layout
 
-- `bots/*/bot.toml`: disabled migration manifests; no bot source has been migrated.
+- `bots/*/`: four migrated `src/` packages and disabled-by-default manifests.
 - `shared/bot_core/`: deliberately small bot-agnostic configuration, manifest, state, path, logging, and atomic JSON primitives.
 - `supervisor/`: typed boundary only; process management is deferred.
 - `portal/`: Discord-independent FastAPI app with a liveness endpoint.
@@ -52,4 +52,4 @@ After installing dependencies, run `uvicorn portal.app:app`. `GET /health` prove
 
 ## Current stage and next stage
 
-Stage 1 provides foundations only. The exact next task is **Stage 2: inventory and migrate CDA Admin into `bots/cda-admin` as its own runnable package/process, preserving behavior and its dependency boundary; map its secrets and persistent data to the manifest and isolated runtime paths; add offline characterization tests; and do not extract shared business logic until comparison with a second bot proves it common.** See [the roadmap](docs/migration-roadmap.md).
+Stage 6 is an architecture/planning stage and did not implement production controls. The authoritative baseline is [Platform architecture](docs/architecture/platform-architecture.md), supported by the [readiness assessment](docs/architecture/platform-readiness.md), [threat model](docs/architecture/threat-model.md), [technical-debt register](docs/architecture/technical-debt.md), and [ADRs](docs/architecture/adr/). The exact recommended next step is **Stage 7 — Launch Contract and Supervisor Core**; its copy/paste-ready prompt is in the platform architecture document.
