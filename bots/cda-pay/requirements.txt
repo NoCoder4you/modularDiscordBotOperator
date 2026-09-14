@@ -1,0 +1,4 @@
+# Runtime dependencies inferred from the snapshot, which contained no lock/requirements file.
+discord.py>=2.0,<3
+APScheduler>=3.9,<4
+aiofiles>=23.2,<25

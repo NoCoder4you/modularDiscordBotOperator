@@ -1,9 +1,10 @@
 [bot]
 id = "cda-pay"
 display_name = "CDA Pay"
-entry_point = "cda_pay.main"
-working_directory = "."
+entry_point = "cda_pay"
+working_directory = "bots/cda-pay"
 enabled = false
 startup_policy = "manual"
 management_agent = false
 colour = "#57F287"
+icon = "coins"
