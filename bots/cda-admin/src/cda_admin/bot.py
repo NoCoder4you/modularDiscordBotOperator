@@ -8,6 +8,7 @@ import random
 import json
 from pathlib import Path
 
+from shared.heartbeat import HeartbeatReporter
 from shared.bot_core.logging import configure_logging
 from .config import CDAAdminConfig
 
@@ -15,6 +16,8 @@ logger = logging.getLogger("bot.cda-admin")
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="noah ", intents=intents, help_command=None)
+heartbeat_reporter = HeartbeatReporter("cda-admin", logger=logger)
+heartbeat_reporter.attach(bot)
 
 
 SERVER_FILE = None  # retained compatibility name; cogs own their isolated paths
