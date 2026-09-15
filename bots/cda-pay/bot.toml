@@ -8,3 +8,5 @@ startup_policy = "manual"
 management_agent = false
 colour = "#57F287"
 icon = "coins"
+python_executable = ".venvs/cda-pay/bin/python"
+shutdown_timeout_seconds = 15

@@ -8,3 +8,5 @@ startup_policy = "manual"
 management_agent = false
 colour = "#5865F2"
 icon = "shield"
+python_executable = ".venvs/cda-admin/bin/python"
+shutdown_timeout_seconds = 15

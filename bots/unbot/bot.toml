@@ -8,3 +8,5 @@ startup_policy = "manual"
 management_agent = false
 colour = "#FEE75C"
 icon = "user-clock"
+python_executable = ".venvs/unbot/bin/python"
+shutdown_timeout_seconds = 15

@@ -1,5 +1,7 @@
-"""Typed process-management boundary; no process implementation exists in Stage 1."""
+"""Typed process lifecycle supervisor."""
 
 from .contracts import Supervisor
+from .registry import BotRegistry
+from .service import SupervisorService
 
-__all__ = ["Supervisor"]
+__all__ = ["BotRegistry", "Supervisor", "SupervisorService"]
