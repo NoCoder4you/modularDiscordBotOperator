@@ -18,3 +18,8 @@
 | LOW | direct static IDs remain in source | bot business code | operational changes require code deploy | move only demonstrably deployment-specific IDs into typed bot config | 13 |
 | DEFER | similar cog loading and command management code | bot entry modules | duplication only | abstract only after authenticated management semantics are proven | 15 |
 | DEFER | generic raw JSON portal editing | portal/data | high corruption/security risk | do not build; prefer typed workflows | indefinite |
+# Stage 12 deliberately deferred debt
+
+- Implement and deploy the private, instance-authenticated local `BotControlAdapter` transport.
+- Add a shared bot-side maintenance enforcement component before enabling maintenance capabilities.
+- Replace the development subprocess backend with the accepted systemd/D-Bus/polkit backend.
