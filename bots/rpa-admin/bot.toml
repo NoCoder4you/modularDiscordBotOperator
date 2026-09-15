@@ -8,3 +8,5 @@ startup_policy = "manual"
 management_agent = false
 colour = "#EB459E"
 icon = "shield-check"
+python_executable = ".venvs/rpa-admin/bin/python"
+shutdown_timeout_seconds = 15

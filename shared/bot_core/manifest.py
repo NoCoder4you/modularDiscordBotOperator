@@ -29,6 +29,8 @@ class BotManifest:
     management_agent: bool = False
     colour: str | None = None
     icon: str | None = None
+    python_executable: str = ".venv/bin/python"
+    shutdown_timeout_seconds: float = 15.0
 
     @classmethod
     def from_mapping(cls, raw: dict[str, Any]) -> "BotManifest":
@@ -42,6 +44,8 @@ class BotManifest:
             "management_agent",
             "colour",
             "icon",
+            "python_executable",
+            "shutdown_timeout_seconds",
         }
         unknown = raw.keys() - allowed
         if unknown:
@@ -73,6 +77,18 @@ class BotManifest:
         icon = raw.get("icon")
         if icon is not None and not isinstance(icon, str):
             raise ValidationError("icon must be a string")
+        executable = raw.get("python_executable", ".venv/bin/python")
+        executable_path = Path(executable) if isinstance(executable, str) else Path("/")
+        if (
+            not isinstance(executable, str)
+            or not executable
+            or executable_path.is_absolute()
+            or ".." in executable_path.parts
+        ):
+            raise ValidationError("python_executable must be a repository-relative path")
+        timeout = raw.get("shutdown_timeout_seconds", 15.0)
+        if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or not 0 < timeout <= 300:
+            raise ValidationError("shutdown_timeout_seconds must be between 0 and 300")
         return cls(
             bot_id,
             raw["display_name"].strip(),
@@ -83,6 +99,8 @@ class BotManifest:
             raw.get("management_agent", False),
             colour,
             icon,
+            executable,
+            float(timeout),
         )
 
 
