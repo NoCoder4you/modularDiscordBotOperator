@@ -140,6 +140,9 @@ class DenyByDefaultAuthorizer:
             "backups.view",
             "backups.create",
             "backups.restore",
+            "scheduler.view",
+            "scheduler.manage",
+            "scheduler.run",
         }
     )
 
