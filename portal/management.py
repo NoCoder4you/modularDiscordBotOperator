@@ -199,6 +199,79 @@ class ApiFailure(Exception):
         self.status, self.code, self.message = status, code, message
 
 
+class ManagementApplication:
+    """Stage 9 application boundary shared by JSON and browser transports."""
+
+    def __init__(self, dependencies: ManagementDependencies) -> None:
+        self._deps = dependencies
+
+    def require(self, actor: Principal, permission: str, bot_id: str | None = None) -> None:
+        if not self._deps.authorizer.can(actor, permission, bot_id=bot_id):
+            raise ApiFailure(403, "permission_denied", "Permission is denied.")
+
+    def resolve_bot(self, bot_id: str) -> RegisteredBot:
+        if len(bot_id) > 64 or not BOT_ID_PATTERN.fullmatch(bot_id):
+            raise ApiFailure(404, "unknown_bot", "Bot is not registered.")
+        try:
+            return self._deps.supervisor.get_bot(bot_id)
+        except UnknownBotError:
+            raise ApiFailure(404, "unknown_bot", "Bot is not registered.") from None
+
+    def list_bots(self, actor: Principal) -> list[BotView]:
+        self.require(actor, "bots.view")
+        return [
+            bot_view(bot)
+            for bot in self._deps.supervisor.list_bots()
+            if self._deps.authorizer.can(actor, "bots.view", bot_id=bot.bot_id)
+        ]
+
+    async def health(self, actor: Principal, bot_id: str) -> HealthView:
+        bot = self.resolve_bot(bot_id)
+        self.require(actor, "bots.view", bot.bot_id)
+        snapshot = await self._deps.health.get(bot.bot_id)
+        if snapshot is None:
+            raise ApiFailure(503, "service_unavailable", "Health evidence is unavailable.")
+        heartbeat = snapshot.evidence.heartbeat
+        return HealthView(
+            bot_id=bot.bot_id,
+            derived_state=snapshot.state.value,
+            process_running=snapshot.evidence.process_running,
+            heartbeat_fresh=snapshot.heartbeat_fresh,
+            discord_connected=bool(heartbeat and heartbeat.discord_connected),
+            discord_ready=bool(heartbeat and heartbeat.discord_ready),
+            maintenance=snapshot.evidence.maintenance_confirmed,
+            state_changed_at=snapshot.state_changed_at,
+            reason=snapshot.reason,
+        )
+
+    async def lifecycle(self, actor: Principal, bot_id: str, action: str) -> LifecycleView:
+        if action not in {"start", "stop", "restart"}:
+            raise ApiFailure(404, "unknown_action", "Lifecycle action was not found.")
+        bot = self.resolve_bot(bot_id)
+        self.require(actor, f"bots.{action}", bot.bot_id)
+        if not self._deps.mutation_limiter.allow(f"{actor.principal_id}:{bot.bot_id}"):
+            raise ApiFailure(429, "rate_limited", "Too many lifecycle requests.")
+        try:
+            result = await getattr(self._deps.supervisor, action)(
+                bot.bot_id, actor=actor.principal_id
+            )
+        except SupervisorError as exc:
+            status, code, message = SAFE_SUPERVISOR_ERRORS.get(
+                exc.code, (502, "lifecycle_failed", "Lifecycle operation failed.")
+            )
+            raise ApiFailure(status, code, message) from None
+        return lifecycle_view(result)
+
+    def operation(self, actor: Principal, operation_id: str) -> OperationView:
+        if len(operation_id) > 64 or not OPERATION_ID_PATTERN.fullmatch(operation_id):
+            raise ApiFailure(404, "operation_not_found", "Operation was not found.")
+        record = self._deps.supervisor.get_operation(operation_id)
+        if record is None:
+            raise ApiFailure(404, "operation_not_found", "Operation was not found.")
+        self.require(actor, "operations.view", record.bot_id)
+        return operation_view(record)
+
+
 SAFE_SUPERVISOR_ERRORS = {
     "unknown_bot": (404, "unknown_bot", "Bot is not registered."),
     "disabled": (409, "bot_disabled", "Bot is disabled."),

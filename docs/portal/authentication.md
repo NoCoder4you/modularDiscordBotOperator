@@ -19,3 +19,7 @@ credential as a cookie.
 
 Failed authentication attempts are subject to a small per-peer in-process sliding-window limit.
 This is intentional local abuse resistance, not a distributed identity/rate-limit service.
+
+Stage 10's browser authentication extension is documented in [stage-10.md](stage-10.md). It uses
+local password identities and rotated server-side sessions; it does not place this bearer credential
+in a browser cookie or reuse Discord credentials.

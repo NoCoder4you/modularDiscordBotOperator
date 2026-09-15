@@ -226,3 +226,5 @@ logs/
 backups/
 *.sqlite
 *.sqlite3
+*.sqlite-wal
+*.sqlite-shm

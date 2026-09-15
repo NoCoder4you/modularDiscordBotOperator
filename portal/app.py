@@ -4,10 +4,14 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
-from .management import ManagementDependencies, install_management_api
+from .management import ManagementApplication, ManagementDependencies, install_management_api
+from .web import PortalDependencies, install_portal
 
 
-def create_app(dependencies: ManagementDependencies | None = None) -> FastAPI:
+def create_app(
+    dependencies: ManagementDependencies | None = None,
+    portal_dependencies: PortalDependencies | None = None,
+) -> FastAPI:
     """Create the portal application.
 
     Management routes are installed only when explicit, authenticated dependencies are
@@ -21,7 +25,24 @@ def create_app(dependencies: ManagementDependencies | None = None) -> FastAPI:
 
     if dependencies is not None:
         install_management_api(application, dependencies)
+    if portal_dependencies is not None:
+        install_portal(application, portal_dependencies)
     return application
+
+
+def create_portal_app(
+    management_dependencies: ManagementDependencies,
+    *,
+    identities,
+    sessions,
+    secure_cookies: bool = True,
+) -> FastAPI:
+    """Compose both transports over one Stage 9 dependency set."""
+    portal_dependencies = PortalDependencies(
+        ManagementApplication(management_dependencies), identities, sessions,
+        management_dependencies.authorizer, management_dependencies.audit_sink, secure_cookies,
+    )
+    return create_app(management_dependencies, portal_dependencies)
 
 
 async def health() -> dict[str, str]:
