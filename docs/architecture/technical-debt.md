@@ -23,3 +23,7 @@
 - Implement and deploy the private, instance-authenticated local `BotControlAdapter` transport.
 - Add a shared bot-side maintenance enforcement component before enabling maintenance capabilities.
 - Replace the development subprocess backend with the accepted systemd/D-Bus/polkit backend.
+
+## Stage 13 deferred resource contracts (2026-09-15)
+
+The canonical audit and prerequisites are in `docs/portal/configuration-and-data.md`. CDA Pay payroll/void files, UNBOT histories/state, RPA Admin verification/moderation/workflow stores, and CDA Admin security/mixed-state files remain deferred. Risks include lost payroll, identity, authorization, and workflow state. Prerequisites are bot-owned schemas, coordinated atomic/transactional writes, typed business operations, and recovery tests. Full backups, SQLite bot adapters, resource-specific grants beyond bot scope, and hot reload also remain debt.

@@ -12,7 +12,7 @@ from collections import defaultdict, deque
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Literal, Protocol
+from typing import Literal, Protocol, TYPE_CHECKING
 
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.exceptions import RequestValidationError
@@ -30,6 +30,8 @@ from .bot_operations import (
 )
 
 logger = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    from .resources import ResourceService
 BOT_ID_PATTERN = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 OPERATION_ID_PATTERN = re.compile(
     r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
@@ -49,7 +51,14 @@ class Authenticator(Protocol):
 
 
 class Authorizer(Protocol):
-    def can(self, actor: Principal, permission: str, *, bot_id: str | None = None) -> bool: ...
+    def can(
+        self,
+        actor: Principal,
+        permission: str,
+        *,
+        bot_id: str | None = None,
+        resource_id: str | None = None,
+    ) -> bool: ...
 
 
 class ManagementSupervisor(Protocol):
@@ -125,10 +134,24 @@ class DenyByDefaultAuthorizer:
             "commands.sync",
             "maintenance.view",
             "maintenance.manage",
+            "config.view",
+            "config.edit",
+            "data.view",
         }
     )
 
-    def can(self, actor: Principal, permission: str, *, bot_id: str | None = None) -> bool:
+    def can(
+        self,
+        actor: Principal,
+        permission: str,
+        *,
+        bot_id: str | None = None,
+        resource_id: str | None = None,
+    ) -> bool:
+        # resource_id is deliberately part of the boundary even though Stage 13's
+        # policy store grants its four base permissions at bot scope.  A future
+        # authorizer can narrow a grant without changing resource services.
+        del resource_id
         return (
             permission in self.KNOWN_PERMISSIONS
             and permission in actor.permissions
@@ -166,6 +189,7 @@ class ManagementDependencies:
     authorizer: Authorizer
     audit_sink: Callable[[ManagementAuditEvent], None] | None = None
     bot_operations: BotOperationService | None = None
+    resources: "ResourceService | None" = None
     auth_limiter: SlidingWindowLimiter = field(default_factory=lambda: SlidingWindowLimiter(10, 60))
     mutation_limiter: SlidingWindowLimiter = field(
         default_factory=lambda: SlidingWindowLimiter(20, 60)

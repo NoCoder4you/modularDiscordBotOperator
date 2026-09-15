@@ -39,8 +39,13 @@ def create_portal_app(
 ) -> FastAPI:
     """Compose both transports over one Stage 9 dependency set."""
     portal_dependencies = PortalDependencies(
-        ManagementApplication(management_dependencies), identities, sessions,
-        management_dependencies.authorizer, management_dependencies.audit_sink, secure_cookies,
+        ManagementApplication(management_dependencies),
+        identities,
+        sessions,
+        management_dependencies.authorizer,
+        management_dependencies.audit_sink,
+        secure_cookies,
+        management_dependencies.resources,
     )
     return create_app(management_dependencies, portal_dependencies)
 
