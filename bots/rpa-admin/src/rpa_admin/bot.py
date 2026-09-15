@@ -6,6 +6,7 @@ import asyncio
 import logging
 import random
 
+from shared.heartbeat import HeartbeatReporter
 from rpa_admin.config import RPAAdminConfig
 from rpa_admin.common_paths import cogs_dir
 
@@ -59,6 +60,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="RPA ", intents=intents, help_command=None)
+heartbeat_reporter = HeartbeatReporter("rpa-admin", logger=logger)
+heartbeat_reporter.attach(bot)
 BACKGROUND_LOG_CHANNEL_ID = 1484064305732259940
 
 # ------------------------------------------------------------------

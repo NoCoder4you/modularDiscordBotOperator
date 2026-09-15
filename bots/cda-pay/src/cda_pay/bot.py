@@ -8,6 +8,7 @@ from pathlib import Path
 import discord
 from discord.ext import commands
 
+from shared.heartbeat import HeartbeatReporter
 from shared.bot_core.logging import configure_logging
 
 from .config import CDAPayConfig
@@ -49,6 +50,8 @@ class CDAPayBot(commands.Bot):
 
 
 bot = CDAPayBot()
+heartbeat_reporter = HeartbeatReporter("cda-pay", logger=logger)
+heartbeat_reporter.attach(bot)
 
 
 @bot.command(name="sync")

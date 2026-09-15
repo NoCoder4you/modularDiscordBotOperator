@@ -6,6 +6,7 @@ import asyncio
 import logging
 from pathlib import Path
 
+from shared.heartbeat import HeartbeatReporter
 from shared.bot_core.config import PlatformConfig
 from shared.bot_core.logging import configure_logging
 from unbot.config import UnbotConfig
@@ -24,6 +25,8 @@ LOGGER = configure_logging("unbot", _platform_config.log_level)
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="noah ", intents=intents, help_command=None)
+heartbeat_reporter = HeartbeatReporter("unbot", logger=LOGGER)
+heartbeat_reporter.attach(bot)
 
 # ------------------------------------------------------------------
 # COG DISCOVERY / LOADING (from ./COGS)

@@ -6,6 +6,7 @@ import asyncio
 import logging
 import os
 import uuid
+import time
 from collections.abc import Callable, Mapping
 
 from .controller import SubprocessController, linux_process_identity
@@ -32,6 +33,7 @@ from .models import (
 )
 from .registry import BotRegistry
 from .state import StateStore
+from .health import DesiredState, HealthEvidence, HealthStore, HealthTiming, HeartbeatReceiver
 
 logger = logging.getLogger(__name__)
 SAFE_ENVIRONMENT = frozenset({"PATH", "HOME", "LANG", "TZ", "SSL_CERT_FILE", "SSL_CERT_DIR"})
@@ -47,6 +49,7 @@ class SupervisorService:
         environment: Mapping[str, str] | None = None,
         startup_grace_seconds: float = 0.15,
         event_sink: Callable[[AuditEvent], None] | None = None,
+        health_timing: HealthTiming = HealthTiming(),
     ) -> None:
         self.registry = registry
         self.state_store = state_store
@@ -58,6 +61,12 @@ class SupervisorService:
         self._operations: dict[str, OperationRecord] = {}
         self._locks = {bot.bot_id: asyncio.Lock() for bot in registry.list()}
         self._accepting = False
+        self.health = HealthStore(health_timing, monotonic=time.monotonic)
+        self._heartbeat_receiver = HeartbeatReceiver(
+            str(self.state_store.path.parent / "heartbeat.sock"),
+            self.health,
+            frozenset(bot.bot_id for bot in registry.list()),
+        )
 
     async def startup(self) -> None:
         self._records.clear()
@@ -79,10 +88,26 @@ class SupervisorService:
             self._records[bot.bot_id] = saved
         self._persist()
         self._accepting = True
+        for bot in self.registry.list():
+            record = self._records.get(bot.bot_id)
+            await self.health.set_evidence(
+                HealthEvidence(
+                    bot.bot_id,
+                    bot.enabled,
+                    DesiredState.RUNNING if record else DesiredState.STOPPED,
+                    bool(record and record.state is ProcessState.RUNNING),
+                    bool(record and record.adopted),
+                    record.process_instance_id if record else None,
+                    time.monotonic() if record and record.state is ProcessState.RUNNING else None,
+                    process_conflict=bool(record and record.state is ProcessState.UNKNOWN),
+                )
+            )
+        await self._heartbeat_receiver.start()
 
     async def shutdown(self) -> None:
         self._accepting = False
         self._persist()
+        await self._heartbeat_receiver.close()
         await self.controller.close()
 
     def list_bots(self) -> tuple[RegisteredBot, ...]:
@@ -157,18 +182,23 @@ class SupervisorService:
             raise BotAlreadyRunningError(f"{bot.bot_id} is not safely offline")
         token = self._environment.get(bot.token_environment_variable)
         if not token:
-            raise ProcessStartError(f"required environment variable {bot.token_environment_variable} is missing")
+            raise ProcessStartError(
+                f"required environment variable {bot.token_environment_variable} is missing"
+            )
         if not bot.executable.is_file() or not os.access(bot.executable, os.X_OK):
             raise ProcessStartError("configured Python executable is unavailable")
         bot.runtime_directory.mkdir(mode=0o700, parents=True, exist_ok=True)
         instance_id = str(uuid.uuid4())
         argv = (str(bot.executable), "-m", bot.entry_point)
-        environment = {key: value for key, value in self._environment.items() if key in SAFE_ENVIRONMENT}
+        environment = {
+            key: value for key, value in self._environment.items() if key in SAFE_ENVIRONMENT
+        }
         environment.update(
             {
                 bot.token_environment_variable: token,
                 "MDBO_RUNTIME_ROOT": str(bot.runtime_directory.parent),
                 "MDBO_PROCESS_INSTANCE_ID": instance_id,
+                "MDBO_HEARTBEAT_SOCKET": str(self.state_store.path.parent / "heartbeat.sock"),
             }
         )
         record = ProcessRecord(
@@ -188,13 +218,26 @@ class SupervisorService:
             record.pid = process.pid
             await asyncio.sleep(self._startup_grace)
             if process.returncode is not None:
-                raise ProcessStartError(f"process exited during startup with code {process.returncode}")
+                raise ProcessStartError(
+                    f"process exited during startup with code {process.returncode}"
+                )
             evidence = linux_process_identity(process.pid)
             if evidence is None:
                 raise ProcessStartError("could not establish process identity")
             record.os_start_ticks, record.expected_argv = evidence
             record.state = ProcessState.RUNNING
             self._persist()
+            await self.health.set_evidence(
+                HealthEvidence(
+                    bot.bot_id,
+                    True,
+                    DesiredState.RUNNING,
+                    True,
+                    True,
+                    instance_id,
+                    time.monotonic(),
+                )
+            )
             return instance_id
         except (OSError, ProcessStartError) as exc:
             record.state = ProcessState.CRASHED
@@ -220,6 +263,17 @@ class SupervisorService:
             await self.controller.wait_for_exit(record, min(5.0, bot.shutdown_timeout_seconds))
         record.state = ProcessState.OFFLINE
         self._persist()
+        await self.health.set_evidence(
+            HealthEvidence(
+                bot.bot_id,
+                bot.enabled,
+                DesiredState.STOPPED,
+                False,
+                True,
+                record.process_instance_id,
+                None,
+            )
+        )
         return record.process_instance_id
 
     async def _restart_locked(self, bot: RegisteredBot) -> str:
@@ -244,7 +298,22 @@ class SupervisorService:
         else:
             record.state = ProcessState.CRASHED
         self._persist()
-        self._emit("bot.process.exited", instance_id=record.process_instance_id, bot_id=record.bot_id)
+        bot = self.registry.get(record.bot_id)
+        await self.health.set_evidence(
+            HealthEvidence(
+                record.bot_id,
+                bot.enabled,
+                DesiredState.STOPPED if record.expected_exit else DesiredState.RUNNING,
+                False,
+                True,
+                record.process_instance_id,
+                None,
+                unexpected_exit=not record.expected_exit,
+            )
+        )
+        self._emit(
+            "bot.process.exited", instance_id=record.process_instance_id, bot_id=record.bot_id
+        )
 
     def _persist(self) -> None:
         self.state_store.save(list(self._records.values()))
