@@ -83,7 +83,7 @@ def install_portal(app: FastAPI, deps: PortalDependencies) -> None:
         if session is None or session.identity_id is None:
             raise ApiFailure(401, "authentication_required", "Authentication is required.")
         identity = deps.identities.find_by_id(session.identity_id)
-        if identity is None or not identity.enabled:
+        if identity is None or not identity.enabled or session.session_revision != identity.session_revision:
             deps.sessions.invalidate(session.session_id)
             raise ApiFailure(401, "authentication_required", "Authentication is required.")
         # The authoritative identity is read on every request; permissions are never cached.
@@ -145,7 +145,7 @@ def install_portal(app: FastAPI, deps: PortalDependencies) -> None:
             emit("portal.login.failed", request, result="invalid")
             content = "<p class=error>Login failed.</p><p><a href=/portal/login>Try again</a></p>"
             return HTMLResponse(_page("Portal login", content, request.state.request_id), status_code=401)
-        rotated = deps.sessions.rotate(session.session_id, identity.identity_id)
+        rotated = deps.sessions.rotate(session.session_id, identity.identity_id, identity.session_revision)
         emit("portal.login.succeeded", request, actor=identity.identity_id, result="succeeded")
         response = RedirectResponse(_safe_next(values.get("next")), status_code=303)
         set_cookie(response, rotated)

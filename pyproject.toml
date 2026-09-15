@@ -9,6 +9,9 @@ description = "Management foundation for isolated Discord bot processes"
 requires-python = ">=3.11"
 dependencies = ["fastapi>=0.110,<1", "uvicorn>=0.30,<1"]
 
+[project.scripts]
+portal-admin = "portal.admin:main"
+
 [project.optional-dependencies]
 dev = ["httpx>=0.27,<1", "pytest>=8,<9", "ruff>=0.6,<1"]
 
