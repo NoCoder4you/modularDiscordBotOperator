@@ -107,6 +107,7 @@ class HealthSnapshot:
     state: CanonicalState
     state_changed_at: datetime
     reason: str
+    heartbeat_fresh: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -175,7 +176,9 @@ class HealthStore:
         changed_at = (
             datetime.now(timezone.utc) if changed or prior is None else prior.state_changed_at
         )
-        result = HealthSnapshot(evidence, state, changed_at, reason)
+        result = HealthSnapshot(
+            evidence, state, changed_at, reason, evidence.heartbeat_fresh(self._monotonic(), self.timing)
+        )
         self._items[evidence.bot_id] = result
         if changed and self._event_sink:
             self._event_sink(

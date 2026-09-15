@@ -70,15 +70,15 @@ def load_watcher_module():
 
     tasks_stub.loop = lambda *args, **kwargs: (lambda func: LoopStub(func))
 
-    sys.modules.update(
-        {
+    replacements = {
             "discord": discord_stub,
             "discord.app_commands": app_commands_stub,
             "discord.ext": ext_stub,
             "discord.ext.commands": commands_stub,
             "discord.ext.tasks": tasks_stub,
         }
-    )
+    previous = {name: sys.modules.get(name) for name in replacements}
+    sys.modules.update(replacements)
     discord_stub.app_commands = app_commands_stub
     ext_stub.commands = commands_stub
     ext_stub.tasks = tasks_stub
@@ -86,7 +86,14 @@ def load_watcher_module():
     module_path = Path(__file__).resolve().parents[1] / "src" / "unbot" / "cogs" / "HabboProfileWatcher.py"
     spec = importlib.util.spec_from_file_location("habbo_profile_watcher_under_test", module_path)
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        for name, original in previous.items():
+            if original is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = original
     return module
 
 

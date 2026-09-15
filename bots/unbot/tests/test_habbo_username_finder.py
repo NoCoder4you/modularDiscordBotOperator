@@ -35,12 +35,22 @@ def load_module():
     commands.hybrid_command = lambda *args, **kwargs: lambda function: function
     ext = types.ModuleType("discord.ext")
     ext.commands = commands
-    sys.modules.update({"aiohttp": aiohttp, "discord": discord, "discord.ext": ext, "discord.ext.commands": commands})
+    replacements = {"aiohttp": aiohttp, "discord": discord, "discord.ext": ext,
+                    "discord.ext.commands": commands}
+    previous = {name: sys.modules.get(name) for name in replacements}
+    sys.modules.update(replacements)
 
     path = Path(__file__).resolve().parents[1] / "src" / "unbot" / "cogs" / "HabboUsernameFinder.py"
     spec = importlib.util.spec_from_file_location("habbo_username_finder_under_test", path)
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        for name, original in previous.items():
+            if original is None:
+                sys.modules.pop(name, None)
+            else:
+                sys.modules[name] = original
     return module
 
 
