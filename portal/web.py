@@ -23,6 +23,7 @@ from .management import (
     error_response,
 )
 from .sessions import PortalSession, SessionStore
+from .resources import FieldType, ResourceError, ResourceService
 
 COOKIE_NAME = "mdbo_portal_session"
 MAX_FORM_BYTES = 4096
@@ -36,6 +37,7 @@ class PortalDependencies:
     authorizer: Authorizer
     audit_sink: object | None = None
     secure_cookies: bool = True
+    resources: ResourceService | None = None
     login_limiter: SlidingWindowLimiter = field(
         default_factory=lambda: SlidingWindowLimiter(10, 60)
     )
@@ -222,6 +224,21 @@ def install_portal(app: FastAPI, deps: PortalDependencies) -> None:
             if deps.authorizer.can(actor, f"bots.{action}", bot_id=bot_id)
         )
         sections = []
+        if deps.resources is not None:
+            configs = deps.resources.list_config(actor, bot_id)
+            if configs:
+                links = "".join(
+                    f"<li><a href='/portal/bots/{html.escape(bot_id)}/config/{html.escape(item.resource_id)}'>{html.escape(item.display_name)}</a></li>"
+                    for item in configs
+                )
+                sections.append(f"<section><h2>Configuration</h2><ul>{links}</ul></section>")
+            data_resources = deps.resources.list_data(actor, bot_id)
+            if data_resources:
+                links = "".join(
+                    f"<li><a href='/portal/bots/{html.escape(bot_id)}/data/{html.escape(item.resource_id)}'>{html.escape(item.display_name)}</a></li>"
+                    for item in data_resources
+                )
+                sections.append(f"<section><h2>Data</h2><ul>{links}</ul></section>")
         if "cogs.view" in capabilities:
             sections.append(
                 f"<section><h2>Cogs</h2><p><a href='/portal/bots/{html.escape(bot_id)}/cogs'>View trusted cog inventory</a></p></section>"
@@ -247,6 +264,151 @@ def install_portal(app: FastAPI, deps: PortalDependencies) -> None:
             )
         content = f"<section><h2>Overview</h2><dl><dt>Bot ID</dt><dd>{html.escape(bot_id)}</dd><dt>Canonical state</dt><dd>{html.escape(health.derived_state)}</dd><dt>Heartbeat fresh</dt><dd>{health.heartbeat_fresh}</dd><dt>Discord connected</dt><dd>{health.discord_connected}</dd><dt>Discord READY</dt><dd>{health.discord_ready}</dd><dt>Maintenance</dt><dd>{health.maintenance}</dd><dt>State changed</dt><dd>{html.escape(health.state_changed_at.isoformat())}</dd></dl></section><section><h2>Lifecycle</h2>{controls}</section>{''.join(sections)}<p><a href=/portal/bots>Back</a></p>"
         return HTMLResponse(_page("Bot status", content, request.state.request_id))
+
+    @app.get("/portal/bots/{bot_id}/config/{resource_id}", response_class=HTMLResponse)
+    async def config_detail(bot_id: str, resource_id: str, request: Request):
+        session, actor = actor_for(request)
+        if deps.resources is None:
+            raise ApiFailure(404, "resource_not_found", "Resource was not found.")
+        try:
+            resource, snapshot = deps.resources.get_config(
+                actor, bot_id, resource_id, request.state.request_id
+            )
+        except ResourceError as exc:
+            raise ApiFailure(exc.status, exc.code, exc.safe_message) from None
+        editable = resource.edit_permission is not None and deps.authorizer.can(
+            actor, resource.edit_permission, bot_id=bot_id, resource_id=resource_id
+        )
+        fields = []
+        for definition in resource.fields:
+            value = snapshot.values.get(definition.field_id, "")
+            escaped = html.escape(str(value))
+            control = escaped
+            if editable and not definition.read_only:
+                input_type = "number" if definition.field_type is FieldType.INTEGER else "text"
+                control = f"<input type={input_type} name='{html.escape(definition.field_id)}' value='{escaped}' required>"
+            fields.append(
+                f"<label>{html.escape(definition.label)} {control}</label><small>{html.escape(definition.description)}</small><br>"
+            )
+        start = (
+            f"<form method=post action='/portal/bots/{html.escape(bot_id)}/config/{html.escape(resource_id)}/preview'>"
+            if editable
+            else ""
+        )
+        end = (
+            f"<input type=hidden name=expected_revision value='{html.escape(snapshot.revision)}'><input type=hidden name=csrf_token value='{html.escape(session.csrf_token)}'><button>Preview changes</button></form>"
+            if editable
+            else ""
+        )
+        return HTMLResponse(
+            _page(
+                resource.display_name,
+                f"<p>Revision: {html.escape(snapshot.revision)}</p>{start}{''.join(fields)}{end}",
+                request.state.request_id,
+            )
+        )
+
+    def config_submission(resource, values):
+        submitted = {}
+        for definition in resource.fields:
+            raw = values.get(definition.field_id)
+            if raw is None:
+                continue
+            if definition.field_type is FieldType.INTEGER:
+                try:
+                    submitted[definition.field_id] = int(raw)
+                except ValueError:
+                    submitted[definition.field_id] = raw
+            elif definition.field_type is FieldType.BOOLEAN:
+                submitted[definition.field_id] = raw == "true"
+            else:
+                submitted[definition.field_id] = raw
+        return submitted
+
+    @app.post("/portal/bots/{bot_id}/config/{resource_id}/preview", response_class=HTMLResponse)
+    async def config_preview(bot_id: str, resource_id: str, request: Request):
+        session, actor = actor_for(request)
+        values = await form(request, session)
+        if deps.resources is None:
+            raise ApiFailure(404, "resource_not_found", "Resource was not found.")
+        try:
+            resource, _ = deps.resources.get_config(
+                actor, bot_id, resource_id, request.state.request_id
+            )
+            submitted = config_submission(resource, values)
+            preview = deps.resources.preview(
+                actor,
+                bot_id,
+                resource_id,
+                submitted,
+                values.get("expected_revision", ""),
+                request.state.request_id,
+            )
+        except ResourceError as exc:
+            raise ApiFailure(exc.status, exc.code, exc.safe_message) from None
+        rows = (
+            "".join(
+                f"<li>{html.escape(change.field_id)}: {html.escape(str(change.old_value))} → {html.escape(str(change.new_value))}{' (restart required)' if change.restart_required else ''}</li>"
+                for change in preview.changes
+            )
+            or "<li>No changes</li>"
+        )
+        hidden = "".join(
+            f"<input type=hidden name='{html.escape(name)}' value='{html.escape(str(value))}'>"
+            for name, value in preview.values.items()
+        )
+        content = f"<ul>{rows}</ul><form method=post action='/portal/bots/{html.escape(bot_id)}/config/{html.escape(resource_id)}/commit'>{hidden}<input type=hidden name=expected_revision value='{html.escape(preview.expected_revision)}'><input type=hidden name=csrf_token value='{html.escape(session.csrf_token)}'><button>Confirm</button></form>"
+        return HTMLResponse(_page("Confirm configuration", content, request.state.request_id))
+
+    @app.post("/portal/bots/{bot_id}/config/{resource_id}/commit")
+    async def config_commit(bot_id: str, resource_id: str, request: Request):
+        session, actor = actor_for(request)
+        values = await form(request, session)
+        if deps.resources is None:
+            raise ApiFailure(404, "resource_not_found", "Resource was not found.")
+        try:
+            resource, _ = deps.resources.get_config(
+                actor, bot_id, resource_id, request.state.request_id
+            )
+            deps.resources.commit(
+                actor,
+                bot_id,
+                resource_id,
+                config_submission(resource, values),
+                values.get("expected_revision", ""),
+                request.state.request_id,
+            )
+        except ResourceError as exc:
+            raise ApiFailure(exc.status, exc.code, exc.safe_message) from None
+        return RedirectResponse(f"/portal/bots/{bot_id}/config/{resource_id}", status_code=303)
+
+    @app.get("/portal/bots/{bot_id}/data/{resource_id}", response_class=HTMLResponse)
+    async def data_view(
+        bot_id: str, resource_id: str, request: Request, limit: int = 25, cursor: str | None = None
+    ):
+        _, actor = actor_for(request)
+        if deps.resources is None:
+            raise ApiFailure(404, "resource_not_found", "Resource was not found.")
+        try:
+            page = deps.resources.data_page(
+                actor, bot_id, resource_id, request.state.request_id, limit=limit, cursor=cursor
+            )
+        except ResourceError as exc:
+            raise ApiFailure(exc.status, exc.code, exc.safe_message) from None
+        rows = "".join(
+            "<li>"
+            + " — ".join(html.escape(str(record.get(field, ""))) for field in page.resource.fields)
+            + "</li>"
+            for record in page.records
+        )
+        more = (
+            f"<a href='?limit={limit}&amp;cursor={html.escape(page.next_cursor)}'>Next</a>"
+            if page.next_cursor
+            else ""
+        )
+        return HTMLResponse(
+            _page(page.resource.display_name, f"<ul>{rows}</ul>{more}", request.state.request_id)
+        )
 
     @app.get("/portal/bots/{bot_id}/cogs", response_class=HTMLResponse)
     async def cogs(bot_id: str, request: Request):
