@@ -137,6 +137,9 @@ class DenyByDefaultAuthorizer:
             "config.view",
             "config.edit",
             "data.view",
+            "backups.view",
+            "backups.create",
+            "backups.restore",
         }
     )
 
@@ -190,6 +193,7 @@ class ManagementDependencies:
     audit_sink: Callable[[ManagementAuditEvent], None] | None = None
     bot_operations: BotOperationService | None = None
     resources: "ResourceService | None" = None
+    backups: object | None = None
     auth_limiter: SlidingWindowLimiter = field(default_factory=lambda: SlidingWindowLimiter(10, 60))
     mutation_limiter: SlidingWindowLimiter = field(
         default_factory=lambda: SlidingWindowLimiter(20, 60)

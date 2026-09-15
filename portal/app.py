@@ -46,6 +46,7 @@ def create_portal_app(
         management_dependencies.audit_sink,
         secure_cookies,
         management_dependencies.resources,
+        management_dependencies.backups,
     )
     return create_app(management_dependencies, portal_dependencies)
 
