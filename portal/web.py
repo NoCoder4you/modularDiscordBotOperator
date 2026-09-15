@@ -24,6 +24,7 @@ from .management import (
 )
 from .sessions import PortalSession, SessionStore
 from .resources import FieldType, ResourceError, ResourceService
+from .backups import BackupError, BackupService
 
 COOKIE_NAME = "mdbo_portal_session"
 MAX_FORM_BYTES = 4096
@@ -38,6 +39,10 @@ class PortalDependencies:
     audit_sink: object | None = None
     secure_cookies: bool = True
     resources: ResourceService | None = None
+    backups: BackupService | None = None
+    backup_limiter: SlidingWindowLimiter = field(
+        default_factory=lambda: SlidingWindowLimiter(6, 60)
+    )
     login_limiter: SlidingWindowLimiter = field(
         default_factory=lambda: SlidingWindowLimiter(10, 60)
     )
@@ -239,6 +244,10 @@ def install_portal(app: FastAPI, deps: PortalDependencies) -> None:
                     for item in data_resources
                 )
                 sections.append(f"<section><h2>Data</h2><ul>{links}</ul></section>")
+        if deps.backups is not None and deps.authorizer.can(actor, "backups.view", bot_id=bot_id):
+            sections.append(
+                f"<section><h2>Backups</h2><p><a href='/portal/bots/{html.escape(bot_id)}/backups'>Manage backups</a></p></section>"
+            )
         if "cogs.view" in capabilities:
             sections.append(
                 f"<section><h2>Cogs</h2><p><a href='/portal/bots/{html.escape(bot_id)}/cogs'>View trusted cog inventory</a></p></section>"
@@ -409,6 +418,101 @@ def install_portal(app: FastAPI, deps: PortalDependencies) -> None:
         return HTMLResponse(
             _page(page.resource.display_name, f"<ul>{rows}</ul>{more}", request.state.request_id)
         )
+
+    @app.get("/portal/bots/{bot_id}/backups", response_class=HTMLResponse)
+    async def backup_list(bot_id: str, request: Request):
+        session, actor = actor_for(request)
+        if deps.backups is None:
+            raise ApiFailure(404, "backup_not_found", "Backup was not found.")
+        try:
+            items = deps.backups.list_backups(actor, bot_id)
+            plans = deps.backups.list_backup_plans(actor, bot_id)
+        except BackupError as exc:
+            raise ApiFailure(exc.status, exc.code, exc.safe_message) from None
+        rows = (
+            "".join(
+                f"<li><a href='/portal/bots/{html.escape(bot_id)}/backups/{html.escape(item.backup_id)}'>{html.escape(item.backup_id)}</a> — {html.escape(item.created_at.isoformat())} — {item.total_bytes} bytes</li>"
+                for item in items
+            )
+            or "<li>No completed backups</li>"
+        )
+        create = ""
+        if deps.authorizer.can(actor, "backups.create", bot_id=bot_id):
+            create = "".join(
+                f"<form method=post action='/portal/bots/{html.escape(bot_id)}/backups'><input type=hidden name=plan_id value='{html.escape(plan.plan_id)}'><input type=hidden name=csrf_token value='{html.escape(session.csrf_token)}'><button>Create backup</button></form>"
+                for plan in plans
+            )
+        return HTMLResponse(_page("Backups", f"{create}<ul>{rows}</ul>", request.state.request_id))
+
+    @app.post("/portal/bots/{bot_id}/backups")
+    async def backup_create(bot_id: str, request: Request):
+        session, actor = actor_for(request)
+        values = await form(request, session)
+        if deps.backups is None:
+            raise ApiFailure(404, "backup_not_found", "Backup was not found.")
+        if not deps.backup_limiter.allow(f"{actor.principal_id}:{bot_id}:create"):
+            raise ApiFailure(429, "rate_limited", "Too many backup requests.")
+        try:
+            item = deps.backups.create_backup(
+                actor, bot_id, values.get("plan_id", ""), request.state.request_id
+            )
+        except BackupError as exc:
+            raise ApiFailure(exc.status, exc.code, exc.safe_message) from None
+        return RedirectResponse(f"/portal/bots/{bot_id}/backups/{item.backup_id}", status_code=303)
+
+    @app.get("/portal/bots/{bot_id}/backups/{backup_id}", response_class=HTMLResponse)
+    async def backup_detail(bot_id: str, backup_id: str, request: Request):
+        session, actor = actor_for(request)
+        if deps.backups is None:
+            raise ApiFailure(404, "backup_not_found", "Backup was not found.")
+        try:
+            item = deps.backups.get_backup(actor, bot_id, backup_id)
+        except BackupError as exc:
+            raise ApiFailure(exc.status, exc.code, exc.safe_message) from None
+        resources = "".join(
+            f"<li>{html.escape(entry.resource_id)} — schema {entry.schema_version} — {entry.size} bytes</li>"
+            for entry in item.resources
+        )
+        restore = ""
+        if deps.authorizer.can(actor, "backups.restore", bot_id=bot_id):
+            restore = f"<form method=post action='/portal/bots/{html.escape(bot_id)}/backups/{html.escape(backup_id)}/preview'><input type=hidden name=csrf_token value='{html.escape(session.csrf_token)}'><button>Preview restore</button></form>"
+        content = f"<dl><dt>Backup ID</dt><dd>{html.escape(item.backup_id)}</dd><dt>Plan</dt><dd>{html.escape(item.plan_id)}</dd><dt>Format</dt><dd>{item.format_version}</dd><dt>Integrity</dt><dd>{html.escape(item.integrity_status)}</dd><dt>Status</dt><dd>{html.escape(item.status)}</dd></dl><ul>{resources}</ul>{restore}"
+        return HTMLResponse(_page("Backup detail", content, request.state.request_id))
+
+    @app.post("/portal/bots/{bot_id}/backups/{backup_id}/preview", response_class=HTMLResponse)
+    async def restore_preview(bot_id: str, backup_id: str, request: Request):
+        session, actor = actor_for(request)
+        await form(request, session)
+        if deps.backups is None:
+            raise ApiFailure(404, "backup_not_found", "Backup was not found.")
+        try:
+            preview = deps.backups.preview_restore(
+                actor, bot_id, backup_id, request.state.request_id
+            )
+        except BackupError as exc:
+            raise ApiFailure(exc.status, exc.code, exc.safe_message) from None
+        rows = "".join(
+            f"<li>{html.escape(change.resource_id)} — {html.escape(change.summary)} — current {html.escape(change.current_revision)} / backup {html.escape(change.backup_revision)}{' — restart required' if change.restart_required else ''}</li>"
+            for change in preview.changes
+        )
+        content = f"<p>Compatibility: compatible</p><ul>{rows}</ul><form method=post action='/portal/bots/{html.escape(bot_id)}/backups/{html.escape(backup_id)}/restore'><input type=hidden name=preview_id value='{html.escape(preview.preview_id)}'><input type=hidden name=csrf_token value='{html.escape(session.csrf_token)}'><button>Confirm restore</button></form>"
+        return HTMLResponse(_page("Confirm restore", content, request.state.request_id))
+
+    @app.post("/portal/bots/{bot_id}/backups/{backup_id}/restore")
+    async def restore_commit(bot_id: str, backup_id: str, request: Request):
+        session, actor = actor_for(request)
+        values = await form(request, session)
+        if deps.backups is None:
+            raise ApiFailure(404, "backup_not_found", "Backup was not found.")
+        if not deps.backup_limiter.allow(f"{actor.principal_id}:{bot_id}:restore"):
+            raise ApiFailure(429, "rate_limited", "Too many restore requests.")
+        try:
+            deps.backups.restore_backup(
+                actor, bot_id, backup_id, values.get("preview_id", ""), request.state.request_id
+            )
+        except BackupError as exc:
+            raise ApiFailure(exc.status, exc.code, exc.safe_message) from None
+        return RedirectResponse(f"/portal/bots/{bot_id}/backups/{backup_id}", status_code=303)
 
     @app.get("/portal/bots/{bot_id}/cogs", response_class=HTMLResponse)
     async def cogs(bot_id: str, request: Request):
