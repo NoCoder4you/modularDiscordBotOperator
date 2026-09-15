@@ -46,3 +46,11 @@ Stage 6 makes documentation/README changes only. Test commands and exact results
 * Strict manifest load and package/`__main__` spec resolution: all four passed when each declared `src` root was explicitly supplied, confirming modules exist and also demonstrating the documented clean-launch packaging gap.
 * `python -m compileall -q shared supervisor portal`: passed.
 * `git status --short -- migration-sources`: empty; snapshots unchanged.
+# Stage 12 readiness note
+
+The portal now has a closed typed application-operation service, trusted per-bot cog/capability
+catalog, process-instance binding, shared lifecycle serialization hook, bounded history, and
+capability-aware server-rendered views. The runtime defaults fail closed until an authenticated
+local bot-control adapter is explicitly deployed. No migrated bot currently advertises generic
+maintenance because none has the required enforcement contract; see
+`docs/portal/bot-operations.md`.

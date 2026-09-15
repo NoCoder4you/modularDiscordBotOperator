@@ -130,6 +130,16 @@ class SupervisorService:
     def get_operation(self, operation_id: str) -> OperationRecord | None:
         return self._operations.get(operation_id)
 
+    def application_operation_lock(self, bot_id: str) -> asyncio.Lock:
+        """Share Stage 7's per-bot serialization boundary with trusted app operations.
+
+        This is intentionally not an HTTP primitive.  Returning the existing lock lets
+        the typed Stage 12 service conflict safely with lifecycle operations without a
+        second, racy serialization system.
+        """
+        self.registry.get(bot_id)
+        return self._locks[bot_id]
+
     async def start(self, bot_id: str, *, actor: str | None = None) -> LifecycleResult:
         return await self._operate(bot_id, LifecycleAction.START, actor, self._start_locked)
 
