@@ -51,6 +51,10 @@ an eight-hour absolute limit, and 1,024 live sessions. Lookup performs determini
 creation performs cleanup and evicts the least recently used session at the bound. No scheduler is
 required.
 
+Stage 11 retains this adapter and adds the restart-safe SQLite adapter described in
+[sessions.md](sessions.md); production composition may opt into persistence without changing the
+browser/session contract.
+
 GET `/portal/login` creates an anonymous session and CSRF token. Successful password verification
 invalidates that identifier and creates an authenticated one, preventing fixation; last-login is
 updated and `portal.login.succeeded` is audited. Failure is generic and emits

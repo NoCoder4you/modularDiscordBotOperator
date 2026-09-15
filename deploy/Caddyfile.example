@@ -1,0 +1,12 @@
+# Example only. TLS is automatic for a configured production hostname.
+portal.example.invalid {
+    reverse_proxy 127.0.0.1:8000 {
+        header_up -Forwarded
+        header_up -X-Forwarded-For
+        header_up -X-Forwarded-Proto
+        header_up -X-Real-IP
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto https
+    }
+    # CSP and other browser security headers remain application-owned.
+}
