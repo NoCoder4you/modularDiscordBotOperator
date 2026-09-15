@@ -25,6 +25,12 @@ from .management import (
 from .sessions import PortalSession, SessionStore
 from .resources import FieldType, ResourceError, ResourceService
 from .backups import BackupError, BackupService
+from .scheduler import (
+    ADMINISTRATIVE_TASK_CATALOG,
+    Schedule,
+    SchedulerError,
+    SchedulerService,
+)
 
 COOKIE_NAME = "mdbo_portal_session"
 MAX_FORM_BYTES = 4096
@@ -40,6 +46,7 @@ class PortalDependencies:
     secure_cookies: bool = True
     resources: ResourceService | None = None
     backups: BackupService | None = None
+    scheduler: SchedulerService | None = None
     backup_limiter: SlidingWindowLimiter = field(
         default_factory=lambda: SlidingWindowLimiter(6, 60)
     )
@@ -211,8 +218,187 @@ def install_portal(app: FastAPI, deps: PortalDependencies) -> None:
             f"<li><a href='/portal/bots/{html.escape(item.bot_id)}'>{html.escape(item.display_name)}</a> — {'enabled' if item.enabled else 'disabled'}</li>"
             for item in items
         )
-        content = f"<ul>{listing}</ul><form method=post action=/portal/logout><input type=hidden name=csrf_token value='{html.escape(session.csrf_token)}'><button>Log out</button></form>"
+        scheduler_link = (
+            "<p><a href=/portal/scheduler>Scheduler</a></p>"
+            if deps.scheduler is not None
+            and any(
+                deps.authorizer.can(actor, "scheduler.view", bot_id=item.bot_id) for item in items
+            )
+            else ""
+        )
+        content = f"<ul>{listing}</ul>{scheduler_link}<form method=post action=/portal/logout><input type=hidden name=csrf_token value='{html.escape(session.csrf_token)}'><button>Log out</button></form>"
         return HTMLResponse(_page("Authorized bots", content, request.state.request_id))
+
+    def scheduler_service() -> SchedulerService:
+        if deps.scheduler is None:
+            raise ApiFailure(404, "scheduler_unavailable", "Scheduler is unavailable.")
+        return deps.scheduler
+
+    def scheduler_failure(exc: SchedulerError) -> ApiFailure:
+        return ApiFailure(exc.status, exc.code, exc.safe_message)
+
+    def schedule_from_form(values: dict[str, str]) -> Schedule:
+        kind = values.get("schedule_kind", "")
+        weekdays: tuple[int, ...] = ()
+        if values.get("weekdays"):
+            try:
+                weekdays = tuple(int(x) for x in values["weekdays"].split(","))
+            except ValueError:
+                raise ApiFailure(422, "schedule_invalid", "Schedule is invalid.") from None
+        interval = None
+        if values.get("interval_seconds"):
+            try:
+                interval = int(values["interval_seconds"])
+            except ValueError:
+                raise ApiFailure(422, "schedule_invalid", "Schedule is invalid.") from None
+        return Schedule(
+            kind,
+            values.get("timezone", ""),
+            values.get("at") or None,
+            values.get("local_time") or None,
+            weekdays,
+            interval,
+        )
+
+    @app.get("/portal/scheduler", response_class=HTMLResponse)
+    async def scheduler_list(request: Request):
+        session, actor = actor_for(request)
+        tasks = scheduler_service().list_tasks(actor)
+        rows = "".join(
+            f"<li><a href='/portal/scheduler/{html.escape(task.task_id)}'>{html.escape(task.name)}</a> — {html.escape(task.bot_id)} — {html.escape(task.task_type_id)} — {'enabled' if task.enabled else 'disabled'}</li>"
+            for task in tasks
+        )
+        create = ""
+        if any(
+            deps.authorizer.can(actor, "scheduler.manage", bot_id=bot_id)
+            for bot_id in ("cda-admin", "cda-pay", "unbot", "rpa-admin")
+        ):
+            create = f"""<h2>Create task</h2><form method=post action=/portal/scheduler>
+<input name=name maxlength=80 required placeholder='Task name'><input name=bot_id required placeholder='Bot ID'>
+<select name=task_type_id>{"".join(f"<option>{html.escape(key)}</option>" for key in ADMINISTRATIVE_TASK_CATALOG)}</select>
+<select name=schedule_kind><option>once</option><option>daily</option><option>weekly</option><option>interval</option></select>
+<input name=timezone value=UTC required><input name=at placeholder='ISO timestamp'><input name=local_time placeholder='HH:MM'>
+<input name=weekdays placeholder='0,1'><input name=interval_seconds type=number min=900><input name=plan_id placeholder='Trusted backup plan'>
+<input type=hidden name=csrf_token value='{html.escape(session.csrf_token)}'><button>Create</button></form>"""
+        return HTMLResponse(
+            _page("Scheduler", f"<ul>{rows}</ul>{create}", request.state.request_id)
+        )
+
+    @app.post("/portal/scheduler")
+    async def scheduler_create(request: Request):
+        session, actor = actor_for(request)
+        values = await form(request, session)
+        params = {"plan_id": values["plan_id"]} if values.get("plan_id") else {}
+        try:
+            task = scheduler_service().create(
+                actor,
+                name=values.get("name", ""),
+                bot_id=values.get("bot_id", ""),
+                task_type_id=values.get("task_type_id", ""),
+                schedule=schedule_from_form(values),
+                parameters=params,
+                request_id=request.state.request_id,
+            )
+        except SchedulerError as exc:
+            raise scheduler_failure(exc) from None
+        return RedirectResponse(f"/portal/scheduler/{task.task_id}", status_code=303)
+
+    @app.get("/portal/scheduler/{task_id}", response_class=HTMLResponse)
+    async def scheduler_detail(task_id: str, request: Request):
+        session, actor = actor_for(request)
+        try:
+            service = scheduler_service()
+            task = service.get_task(actor, task_id)
+            history = service.store.history(task.task_id)
+        except SchedulerError as exc:
+            raise scheduler_failure(exc) from None
+        executions = "".join(
+            f"<li>{html.escape(item.execution_id)} — {html.escape(item.status.value)} — {html.escape(item.started_at.isoformat())}</li>"
+            for item in history
+        )
+        controls = ""
+        kind = ADMINISTRATIVE_TASK_CATALOG[task.task_type_id]
+        if deps.authorizer.can(
+            actor, "scheduler.manage", bot_id=task.bot_id
+        ) and deps.authorizer.can(actor, kind.underlying_permission, bot_id=task.bot_id):
+            schedule = task.schedule
+            controls += f"""<details><summary>Edit</summary><form method=post action='/portal/scheduler/{task.task_id}/edit'>
+<input name=name maxlength=80 value='{html.escape(task.name)}' required><input type=hidden name=revision value={task.revision}>
+<input type=hidden name=schedule_kind value='{html.escape(schedule.kind)}'><input name=timezone value='{html.escape(schedule.timezone)}' required>
+<input name=at value='{html.escape(schedule.at or "")}'><input name=local_time value='{html.escape(schedule.local_time or "")}'>
+<input name=weekdays value='{html.escape(",".join(str(x) for x in schedule.weekdays))}'><input name=interval_seconds type=number min=900 value='{schedule.interval_seconds or ""}'>
+<input name=plan_id value='{html.escape(task.parameters.get("plan_id", ""))}'><input type=hidden name=csrf_token value='{html.escape(session.csrf_token)}'><button>Save</button></form></details>"""
+            controls += f"<form method=post action='/portal/scheduler/{task.task_id}/toggle'><input type=hidden name=revision value={task.revision}><input type=hidden name=enabled value={'false' if task.enabled else 'true'}><input type=hidden name=csrf_token value='{html.escape(session.csrf_token)}'><button>{'Disable' if task.enabled else 'Enable'}</button></form>"
+            controls += f"<form method=post action='/portal/scheduler/{task.task_id}/delete'><input type=hidden name=revision value={task.revision}><input type=hidden name=csrf_token value='{html.escape(session.csrf_token)}'><button>Delete</button></form>"
+        if deps.authorizer.can(actor, "scheduler.run", bot_id=task.bot_id) and deps.authorizer.can(
+            actor, kind.underlying_permission, bot_id=task.bot_id
+        ):
+            controls += f"<form method=post action='/portal/scheduler/{task.task_id}/run'><input type=hidden name=csrf_token value='{html.escape(session.csrf_token)}'><button>Run now</button></form>"
+        content = f"<dl><dt>Task ID</dt><dd>{task.task_id}</dd><dt>Bot</dt><dd>{html.escape(task.bot_id)}</dd><dt>Type</dt><dd>{html.escape(task.task_type_id)}</dd><dt>Owner</dt><dd>{html.escape(task.owner_id)}</dd><dt>Timezone</dt><dd>{html.escape(task.schedule.timezone)}</dd><dt>Revision</dt><dd>{task.revision}</dd></dl>{controls}<h2>Recent executions</h2><ul>{executions}</ul>"
+        return HTMLResponse(_page(task.name, content, request.state.request_id))
+
+    @app.post("/portal/scheduler/{task_id}/edit")
+    async def scheduler_edit(task_id: str, request: Request):
+        session, actor = actor_for(request)
+        values = await form(request, session)
+        params = {"plan_id": values["plan_id"]} if values.get("plan_id") else {}
+        try:
+            scheduler_service().update(
+                actor,
+                task_id,
+                int(values.get("revision", "-1")),
+                name=values.get("name", ""),
+                schedule=schedule_from_form(values),
+                parameters=params,
+                request_id=request.state.request_id,
+            )
+        except SchedulerError as exc:
+            raise scheduler_failure(exc) from None
+        except ValueError:
+            raise ApiFailure(422, "stale_revision", "Task revision is invalid.") from None
+        return RedirectResponse(f"/portal/scheduler/{task_id}", status_code=303)
+
+    @app.post("/portal/scheduler/{task_id}/toggle")
+    async def scheduler_toggle(task_id: str, request: Request):
+        session, actor = actor_for(request)
+        values = await form(request, session)
+        try:
+            scheduler_service().set_enabled(
+                actor,
+                task_id,
+                int(values.get("revision", "-1")),
+                values.get("enabled") == "true",
+                request.state.request_id,
+            )
+        except (SchedulerError, ValueError) as exc:
+            if isinstance(exc, SchedulerError):
+                raise scheduler_failure(exc) from None
+            raise ApiFailure(422, "stale_revision", "Task revision is invalid.") from None
+        return RedirectResponse(f"/portal/scheduler/{task_id}", status_code=303)
+
+    @app.post("/portal/scheduler/{task_id}/delete")
+    async def scheduler_delete(task_id: str, request: Request):
+        session, actor = actor_for(request)
+        values = await form(request, session)
+        try:
+            scheduler_service().delete(
+                actor, task_id, int(values.get("revision", "-1")), request.state.request_id
+            )
+        except SchedulerError as exc:
+            raise scheduler_failure(exc) from None
+        except ValueError:
+            raise ApiFailure(422, "stale_revision", "Task revision is invalid.") from None
+        return RedirectResponse("/portal/scheduler", status_code=303)
+
+    @app.post("/portal/scheduler/{task_id}/run")
+    async def scheduler_run(task_id: str, request: Request):
+        session, actor = actor_for(request)
+        await form(request, session)
+        try:
+            await scheduler_service().run_now(actor, task_id, request.state.request_id)
+        except SchedulerError as exc:
+            raise scheduler_failure(exc) from None
+        return RedirectResponse(f"/portal/scheduler/{task_id}", status_code=303)
 
     @app.get("/portal/bots/{bot_id}", response_class=HTMLResponse)
     async def bot_detail(bot_id: str, request: Request):

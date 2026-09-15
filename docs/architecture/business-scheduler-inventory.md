@@ -1,0 +1,25 @@
+# Bot-owned business scheduler inventory
+
+This inventory was derived from the migrated bot source. All entries remain bot-owned and portal editing is disabled. Unless noted, definitions are in-memory, start with cog/bot startup, stop on bot-process exit, do not survive as scheduler state, do not catch up, and restart independently when either the bot or its supervisor-managed process restarts. A supervisor restart alone does not affect an already-running adopted bot.
+
+| Bot | Safe job name/purpose | Implementation and cadence | Zone / DST | Persistence, catch-up, duplicates/concurrency | READY / affected data | Portal visibility / recommendation |
+|---|---|---|---|---|---|---|
+| CDA Admin | Awaiting verification cleanup | `discord.ext.tasks.loop`, 15 min | elapsed-time/UTC cutoff | no occurrence persistence/catch-up; one loop instance | waits READY; membership/kicks | safe summary; remain bot-owned |
+| CDA Admin | Verification scan | tasks loop, 2.5 min | elapsed time | in-memory | bot/guild membership | safe summary; remain bot-owned |
+| CDA Admin | Role updater | tasks loop, 10 min with shared request pacing | elapsed time | in-memory; loop serializes its body | Discord/Habbo profiles and roles | safe summary; remain bot-owned |
+| CDA Admin | Daily collection announcement | APScheduler BackgroundScheduler, daily 00:00 UTC | UTC; no DST shift | memory job, default APScheduler misfire/concurrency; replacement by ID within process | Discord channel; requires usable bot loop/cache | safe cadence only; migration requires messaging ADR |
+| CDA Admin | Pay announcements | AsyncIOScheduler, eight daily `:45` jobs | host/default scheduler zone; DST semantics therefore deployment-dependent | memory jobs; no explicit coalescing or IDs | Discord channel | cadence is safe but zone caveat must remain visible; migration deferred |
+| CDA Pay | Weekly void reset | AsyncIOScheduler Sunday 23:00 by typed bot config | default Europe/London; APScheduler timezone handles DST | memory; `coalesce=True`, 300 s grace, one scheduler instance | clears void JSON; no READY check | safe read-only; remain bot-owned because business data/semantics |
+| CDA Pay | Daily pay-data backup/retention | tasks loop every 24 h after configured local first run | default Europe/London; first wall time then elapsed 24 h, so DST may drift | files persist; no catch-up; one loop | waits READY; monthly pay JSON and bot backup files | safe summary; not Stage 14 backup; remain bot-owned |
+| CDA Pay | delayed DM auto-reply | per-message asyncio task, 120 s | elapsed time | no persistence/catch-up; potentially concurrent per message | Discord messages | do not expose; event debounce, not an administrative schedule |
+| UNBOT | process/config heartbeat | bot tasks loop, 15 s | elapsed time | in-memory | platform heartbeat only | platform health already authoritative; not a business scheduler control |
+| UNBOT | Habbo profile watcher | tasks loop, configured five-minute polling | elapsed time; UTC records | JSON business state persists; no missed-poll replay; loop serial; explicit API backoff | waits READY; online/offline records and notifications | safe summary; remain bot-owned |
+| UNBOT | Habbo ID tracker | tasks loop, configured interval | elapsed time; UTC records | JSON snapshots/history persist; bounded history; loop serial | waits READY; tracked IDs/snapshots/notifications | safe summary; remain bot-owned |
+| RPA Admin | Weekly void reset/checker | tasks loop every minute, idempotent Eastern-week key | `America/New_York`; zone-aware DST | business state persists; next loop catches up; idempotency prevents duplicate weekly reset | waits READY; void records and announcements | safe summary; remain bot-owned |
+| RPA Admin | Pay announcement checker | tasks loop every 30 s | `America/New_York`; zone-aware DST | in-memory minute key avoids duplicate within process; no offline catch-up | waits READY; Discord announcement | safe summary; messaging migration deferred |
+| RPA Admin | Mute expiry cleanup | tasks loop every minute | persisted expiry timestamps | persisted records support later cleanup; loop serial | Discord roles/DMs | safe summary; remain bot-owned |
+| RPA Admin | Automatic Habbo roles | tasks loop at configured interval with shared pacing | elapsed time | no occurrence persistence; serialized request starts | Discord/Habbo roles | safe summary; remain bot-owned |
+| RPA Admin | Giveaway completion | one asyncio task per persisted giveaway, reconstructed at cog load | UTC persisted end times | persisted giveaway record; overdue entries complete after restore; task map prevents same-process duplicate | Discord message/reactions | safe summary; remain bot-owned |
+| RPA Admin | process/config heartbeat | bot tasks loop, 15 s | elapsed time | in-memory | platform heartbeat | health evidence only; not editable |
+
+Short request pacing sleeps and command-local loops are not periodic jobs. No source under `bots/` was changed for Stage 15. Reliable runtime next-run/status adapters do not yet exist, so Stage 15 documents this inventory rather than presenting guessed live values.
